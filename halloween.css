@@ -17,6 +17,10 @@
     display: inline-block;
     animation: pumpkinBob 2s ease-in-out infinite;
     filter: drop-shadow(0 0 10px #ff6b1a);
+    font-size: 2rem;
+    vertical-align: middle;
+    font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', sans-serif;
+    line-height: 1;
 }
 
 @keyframes pumpkinBob {
@@ -125,37 +129,16 @@ header h1 {
     }
 }
 
-/* Spider web overlay */
-.spider-web {
+/* Physics spider webs */
+.physics-spider-web {
     position: fixed;
     pointer-events: none;
     z-index: 9999;
+    will-change: transform;
 }
 
-.spider-web.top-left {
-    top: 0;
-    left: 0;
-    width: 200px;
-    height: 200px;
-    background:
-        linear-gradient(45deg, transparent 48%, rgba(255, 255, 255, 0.1) 48%, rgba(255, 255, 255, 0.1) 52%, transparent 52%),
-        linear-gradient(-45deg, transparent 48%, rgba(255, 255, 255, 0.1) 48%, rgba(255, 255, 255, 0.1) 52%, transparent 52%),
-        radial-gradient(circle at 0% 0%, transparent 20%, rgba(255, 255, 255, 0.05) 20%, rgba(255, 255, 255, 0.05) 21%, transparent 21%),
-        radial-gradient(circle at 0% 0%, transparent 40%, rgba(255, 255, 255, 0.05) 40%, rgba(255, 255, 255, 0.05) 41%, transparent 41%),
-        radial-gradient(circle at 0% 0%, transparent 60%, rgba(255, 255, 255, 0.05) 60%, rgba(255, 255, 255, 0.05) 61%, transparent 61%);
-}
-
-.spider-web.top-right {
-    top: 0;
-    right: 0;
-    width: 200px;
-    height: 200px;
-    background:
-        linear-gradient(-45deg, transparent 48%, rgba(255, 255, 255, 0.1) 48%, rgba(255, 255, 255, 0.1) 52%, transparent 52%),
-        linear-gradient(45deg, transparent 48%, rgba(255, 255, 255, 0.1) 48%, rgba(255, 255, 255, 0.1) 52%, transparent 52%),
-        radial-gradient(circle at 100% 0%, transparent 20%, rgba(255, 255, 255, 0.05) 20%, rgba(255, 255, 255, 0.05) 21%, transparent 21%),
-        radial-gradient(circle at 100% 0%, transparent 40%, rgba(255, 255, 255, 0.05) 40%, rgba(255, 255, 255, 0.05) 41%, transparent 41%),
-        radial-gradient(circle at 100% 0%, transparent 60%, rgba(255, 255, 255, 0.05) 60%, rgba(255, 255, 255, 0.05) 61%, transparent 61%);
+.physics-spider-web canvas {
+    display: block;
 }
 
 /* Spooky cursor trail */
