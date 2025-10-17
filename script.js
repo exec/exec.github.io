@@ -867,6 +867,10 @@ function initTabSwitching() {
  * =================
  */
 
+// Track imported filenames
+let importedHashFilename = null;
+let importedEncodingFilename = null;
+
 async function generateHash(text, algorithm) {
     const encoder = new TextEncoder();
     const data = encoder.encode(text);
@@ -887,16 +891,26 @@ function updateHashes() {
     }
 
     const algorithms = [
-        { name: 'SHA-1', algo: 'SHA-1' },
-        { name: 'SHA-256', algo: 'SHA-256' },
-        { name: 'SHA-384', algo: 'SHA-384' },
-        { name: 'SHA-512', algo: 'SHA-512' }
+        { name: 'SHA-1', algo: 'SHA-1', ext: 'sha1' },
+        { name: 'SHA-256', algo: 'SHA-256', ext: 'sha256' },
+        { name: 'SHA-384', algo: 'SHA-384', ext: 'sha384' },
+        { name: 'SHA-512', algo: 'SHA-512', ext: 'sha512' }
     ];
 
-    algorithms.forEach(async ({ name, algo }) => {
+    algorithms.forEach(async ({ name, algo, ext }) => {
         try {
             const hash = await generateHash(inputText, algo);
-            const card = createEncodingCard(name, hash);
+            // Format as proper checksum file if we have an imported filename
+            let checksumContent;
+            let filename;
+            if (importedHashFilename) {
+                checksumContent = `${hash} *${importedHashFilename}`;
+                filename = `${importedHashFilename}.${ext}`;
+            } else {
+                checksumContent = hash;
+                filename = `checksum.${ext}`;
+            }
+            const card = createHashCard(name, checksumContent, filename);
             resultsContainer.appendChild(card);
         } catch (error) {
             console.error(`Error generating ${name}:`, error);
@@ -907,6 +921,9 @@ function updateHashes() {
 function handleHashFileImport(event) {
     const file = event.target.files[0];
     if (!file) return;
+
+    // Store filename for checksum file generation
+    importedHashFilename = file.name;
 
     // Display filename
     const fileNameSpan = document.getElementById('hashFileName');
@@ -932,6 +949,7 @@ function clearHashInput() {
     fileInput.value = '';
     fileNameSpan.textContent = '';
     resultsContainer.innerHTML = '';
+    importedHashFilename = null; // Clear stored filename
 }
 
 function formatFileSize(bytes) {
@@ -1034,6 +1052,43 @@ const encodingFunctions = {
     }
 };
 
+function getEncodingFilename(operationName, originalFilename) {
+    // Generate appropriate filename based on operation
+    const baseFilename = originalFilename || 'output';
+    const extensionMap = {
+        'Base64 Encode': '.base64',
+        'Base64 Decode': '.txt',
+        'URL Encode': '.urlencoded',
+        'URL Decode': '.txt',
+        'HTML Entities Encode': '.html-entities',
+        'HTML Entities Decode': '.txt',
+        'Hex Encode': '.hex',
+        'Hex Decode': '.txt',
+        'Binary Encode': '.bin',
+        'Binary Decode': '.txt',
+        'Reverse Text': '.reversed.txt',
+        'Word Count': '.wordcount.txt',
+        'Uppercase': '.upper.txt',
+        'Lowercase': '.lower.txt',
+        'Title Case': '.title.txt',
+        'Remove Whitespace': '.nowspace.txt',
+        'Remove Duplicate Lines': '.unique.txt',
+        'Sort Lines (A-Z)': '.sorted.txt',
+        'Sort Lines (Z-A)': '.sorted-desc.txt'
+    };
+
+    const extension = extensionMap[operationName] || '.txt';
+
+    // If we have an original filename, modify it intelligently
+    if (originalFilename) {
+        // Remove existing extension for some operations
+        const nameWithoutExt = originalFilename.replace(/\.[^/.]+$/, '');
+        return nameWithoutExt + extension;
+    }
+
+    return baseFilename + extension;
+}
+
 function updateEncodings() {
     const inputText = document.getElementById('encodingInput').value;
     const resultsContainer = document.getElementById('encodingResults');
@@ -1048,7 +1103,8 @@ function updateEncodings() {
     for (let [name, func] of Object.entries(encodingFunctions)) {
         try {
             const result = func(inputText);
-            const card = createEncodingCard(name, result);
+            const filename = getEncodingFilename(name, importedEncodingFilename);
+            const card = createEncodingCard(name, result, filename);
             resultsContainer.appendChild(card);
         } catch (error) {
             console.error(`Error with ${name}:`, error);
@@ -1059,6 +1115,9 @@ function updateEncodings() {
 function handleEncodingFileImport(event) {
     const file = event.target.files[0];
     if (!file) return;
+
+    // Store filename for intelligent file naming
+    importedEncodingFilename = file.name;
 
     // Display filename
     const fileNameSpan = document.getElementById('encodingFileName');
@@ -1084,6 +1143,7 @@ function clearEncodingInput() {
     fileInput.value = '';
     fileNameSpan.textContent = '';
     resultsContainer.innerHTML = '';
+    importedEncodingFilename = null; // Clear stored filename
 }
 
 function downloadFile(filename, content) {
@@ -1134,7 +1194,7 @@ function createSimpleCard(title, content) {
     return card;
 }
 
-function createEncodingCard(title, content) {
+function createHashCard(title, content, filename) {
     const card = document.createElement('div');
     card.className = 'result-card';
 
@@ -1160,8 +1220,52 @@ function createEncodingCard(title, content) {
     exportBtn.textContent = 'Export file';
     exportBtn.style.background = 'var(--primary-hover)';
     exportBtn.addEventListener('click', () => {
-        const sanitizedTitle = title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-        downloadFile(`${sanitizedTitle}.txt`, content);
+        downloadFile(filename, content);
+    });
+
+    buttonContainer.appendChild(copyBtn);
+    buttonContainer.appendChild(exportBtn);
+
+    header.appendChild(label);
+    header.appendChild(buttonContainer);
+
+    const textDiv = document.createElement('div');
+    textDiv.className = 'result-text';
+    textDiv.textContent = content;
+
+    card.appendChild(header);
+    card.appendChild(textDiv);
+
+    return card;
+}
+
+function createEncodingCard(title, content, filename) {
+    const card = document.createElement('div');
+    card.className = 'result-card';
+
+    const header = document.createElement('div');
+    header.className = 'result-header';
+
+    const label = document.createElement('div');
+    label.className = 'result-label';
+    label.textContent = title;
+
+    const buttonContainer = document.createElement('div');
+    buttonContainer.style.display = 'flex';
+    buttonContainer.style.gap = '0.5rem';
+
+    const copyBtn = document.createElement('button');
+    copyBtn.className = 'copy-btn';
+    copyBtn.textContent = 'Copy';
+    copyBtn.setAttribute('data-text', content);
+    copyBtn.addEventListener('click', handleCopy);
+
+    const exportBtn = document.createElement('button');
+    exportBtn.className = 'copy-btn';
+    exportBtn.textContent = 'Export file';
+    exportBtn.style.background = 'var(--primary-hover)';
+    exportBtn.addEventListener('click', () => {
+        downloadFile(filename, content);
     });
 
     buttonContainer.appendChild(copyBtn);
