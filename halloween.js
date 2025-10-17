@@ -14,25 +14,29 @@
      * Add floating ghosts and spooky emojis in background
      */
     function addFloatingGhosts() {
-        const spookyEmojis = ['👻', '💀', '🦇', '🕷️', '🕸️', '🎃', '🧛', '🧟', '🦴', '☠️', '🧙', '🔮', '🕯️', '⚰️'];
+        const spookyEmojis = ['👻', '💀', '🦇', '🎃'];
+        let activeGhosts = 0;
+        const maxGhosts = 3; // Limit concurrent ghosts
 
         setInterval(() => {
-            if (Math.random() > 0.5) { // 50% chance every interval
+            if (activeGhosts < maxGhosts && Math.random() > 0.7) { // 30% chance, max 3 at once
+                activeGhosts++;
                 const ghost = document.createElement('div');
                 ghost.className = 'floating-ghost';
                 ghost.textContent = spookyEmojis[Math.floor(Math.random() * spookyEmojis.length)];
-                ghost.style.left = (Math.random() * 80 + 10) + 'vw'; // Keep more centered
+                ghost.style.left = (Math.random() * 70 + 15) + 'vw';
                 ghost.style.top = '100vh';
-                ghost.style.animationDuration = (15 + Math.random() * 15) + 's'; // Faster
-                ghost.style.fontSize = (2 + Math.random() * 2) + 'rem'; // Varying sizes
+                ghost.style.animationDuration = (20 + Math.random() * 10) + 's';
+                ghost.style.fontSize = '2.5rem';
                 document.body.appendChild(ghost);
 
                 // Remove after animation
                 setTimeout(() => {
                     ghost.remove();
+                    activeGhosts--;
                 }, 30000);
             }
-        }, 3000); // More frequent
+        }, 8000); // Much less frequent
     }
 
     /**
@@ -43,6 +47,9 @@
         container.className = 'halloween-particles';
         card.appendChild(container);
 
+        let activeParticles = 0;
+        const maxParticles = 6; // Limit active particles per card
+
         // Create particles periodically
         const particleInterval = setInterval(() => {
             // Stop if card is removed
@@ -51,6 +58,10 @@
                 return;
             }
 
+            // Don't spawn if too many active
+            if (activeParticles >= maxParticles) return;
+
+            activeParticles++;
             const particle = document.createElement('div');
             particle.className = `particle ${effectType}`;
 
@@ -58,22 +69,21 @@
             particle.style.left = Math.random() * 100 + '%';
 
             // Random drift amount
-            const drift = (Math.random() - 0.5) * 150;
+            const drift = (Math.random() - 0.5) * 100;
             particle.style.setProperty('--drift', drift + 'px');
 
-            // Random delay
-            particle.style.animationDelay = Math.random() * 1 + 's';
-
             // Random duration
-            particle.style.animationDuration = (2 + Math.random() * 1.5) + 's';
+            const duration = 3 + Math.random() * 2;
+            particle.style.animationDuration = duration + 's';
 
             container.appendChild(particle);
 
             // Remove particle after animation
             setTimeout(() => {
                 particle.remove();
-            }, 5000);
-        }, 200 + Math.random() * 150); // More frequent particles
+                activeParticles--;
+            }, duration * 1000);
+        }, 800); // Much less frequent - every 800ms
 
         // Store interval ID on card for cleanup
         card._particleInterval = particleInterval;
@@ -157,34 +167,24 @@
     }
 
     /**
-     * Add spooky screenshake on copy
+     * Add subtle pulse effect on copy
      */
-    function addSpookyScreenshake() {
+    function addSpookyPulse() {
         const originalHandleCopy = window.handleCopy;
         if (originalHandleCopy) {
             window.handleCopy = function(event) {
                 // Call original
                 originalHandleCopy.call(this, event);
 
-                // Add screenshake
-                document.body.style.animation = 'screenshake 0.3s ease-in-out';
+                // Add subtle pulse to button instead of screen shake
+                const btn = event.target;
+                btn.style.transform = 'scale(1.1)';
                 setTimeout(() => {
-                    document.body.style.animation = '';
-                }, 300);
+                    btn.style.transform = '';
+                }, 200);
             };
         }
     }
-
-    // Screenshake animation
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes screenshake {
-            0%, 100% { transform: translate(0, 0); }
-            10%, 30%, 50%, 70%, 90% { transform: translate(-2px, 2px); }
-            20%, 40%, 60%, 80% { transform: translate(2px, -2px); }
-        }
-    `;
-    document.head.appendChild(style);
 
     /**
      * Initialize all Halloween effects
@@ -196,13 +196,13 @@
                 addFloatingGhosts();
                 observeResultCards();
                 makeInteractivePumpkin();
-                addSpookyScreenshake();
+                addSpookyPulse();
             });
         } else {
             addFloatingGhosts();
             observeResultCards();
             makeInteractivePumpkin();
-            addSpookyScreenshake();
+            addSpookyPulse();
         }
 
         console.log('🎃 Happy Halloween! Spooky effects activated! 🎃');
