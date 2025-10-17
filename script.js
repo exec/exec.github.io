@@ -908,11 +908,9 @@ function handleHashFileImport(event) {
     const file = event.target.files[0];
     if (!file) return;
 
-    // Display filename and show clear button
+    // Display filename
     const fileNameSpan = document.getElementById('hashFileName');
-    const clearBtn = document.getElementById('hashClearFile');
     fileNameSpan.textContent = `File: ${file.name} (${formatFileSize(file.size)})`;
-    clearBtn.style.display = 'block';
 
     const reader = new FileReader();
     reader.onload = function(e) {
@@ -924,14 +922,16 @@ function handleHashFileImport(event) {
     reader.readAsText(file);
 }
 
-function clearHashFile() {
+function clearHashInput() {
+    const hashInput = document.getElementById('hashInput');
     const fileInput = document.getElementById('hashFileInput');
     const fileNameSpan = document.getElementById('hashFileName');
-    const clearBtn = document.getElementById('hashClearFile');
+    const resultsContainer = document.getElementById('hashResults');
 
+    hashInput.value = '';
     fileInput.value = '';
     fileNameSpan.textContent = '';
-    clearBtn.style.display = 'none';
+    resultsContainer.innerHTML = '';
 }
 
 function formatFileSize(bytes) {
@@ -1060,11 +1060,9 @@ function handleEncodingFileImport(event) {
     const file = event.target.files[0];
     if (!file) return;
 
-    // Display filename and show clear button
+    // Display filename
     const fileNameSpan = document.getElementById('encodingFileName');
-    const clearBtn = document.getElementById('encodingClearFile');
     fileNameSpan.textContent = `File: ${file.name} (${formatFileSize(file.size)})`;
-    clearBtn.style.display = 'block';
 
     const reader = new FileReader();
     reader.onload = function(e) {
@@ -1076,14 +1074,16 @@ function handleEncodingFileImport(event) {
     reader.readAsText(file);
 }
 
-function clearEncodingFile() {
+function clearEncodingInput() {
+    const encodingInput = document.getElementById('encodingInput');
     const fileInput = document.getElementById('encodingFileInput');
     const fileNameSpan = document.getElementById('encodingFileName');
-    const clearBtn = document.getElementById('encodingClearFile');
+    const resultsContainer = document.getElementById('encodingResults');
 
+    encodingInput.value = '';
     fileInput.value = '';
     fileNameSpan.textContent = '';
-    clearBtn.style.display = 'none';
+    resultsContainer.innerHTML = '';
 }
 
 function downloadFile(filename, content) {
@@ -1202,67 +1202,37 @@ function init() {
     // Hash generator
     const hashInput = document.getElementById('hashInput');
     if (hashInput) {
-        let isFileImport = false;
-        hashInput.addEventListener('input', (e) => {
-            // If user is typing (not from file import), clear the file reference
-            if (!isFileImport && document.getElementById('hashFileName').textContent) {
-                clearHashFile();
-            }
-            isFileImport = false;
-            updateHashes();
-        });
-
-        // Override file import to set flag
-        const originalHashFileImport = handleHashFileImport;
-        window.handleHashFileImport = function(event) {
-            isFileImport = true;
-            originalHashFileImport.call(this, event);
-        };
+        hashInput.addEventListener('input', updateHashes);
     }
 
     // Hash file import
     const hashFileInput = document.getElementById('hashFileInput');
     if (hashFileInput) {
-        hashFileInput.addEventListener('change', window.handleHashFileImport || handleHashFileImport);
+        hashFileInput.addEventListener('change', handleHashFileImport);
     }
 
-    // Hash clear file button
-    const hashClearFile = document.getElementById('hashClearFile');
-    if (hashClearFile) {
-        hashClearFile.addEventListener('click', clearHashFile);
+    // Hash clear button
+    const hashClearBtn = document.getElementById('hashClearBtn');
+    if (hashClearBtn) {
+        hashClearBtn.addEventListener('click', clearHashInput);
     }
 
     // Encoding utilities
     const encodingInput = document.getElementById('encodingInput');
     if (encodingInput) {
-        let isFileImport = false;
-        encodingInput.addEventListener('input', (e) => {
-            // If user is typing (not from file import), clear the file reference
-            if (!isFileImport && document.getElementById('encodingFileName').textContent) {
-                clearEncodingFile();
-            }
-            isFileImport = false;
-            updateEncodings();
-        });
-
-        // Override file import to set flag
-        const originalEncodingFileImport = handleEncodingFileImport;
-        window.handleEncodingFileImport = function(event) {
-            isFileImport = true;
-            originalEncodingFileImport.call(this, event);
-        };
+        encodingInput.addEventListener('input', updateEncodings);
     }
 
     // Encoding file import
     const encodingFileInput = document.getElementById('encodingFileInput');
     if (encodingFileInput) {
-        encodingFileInput.addEventListener('change', window.handleEncodingFileImport || handleEncodingFileImport);
+        encodingFileInput.addEventListener('change', handleEncodingFileImport);
     }
 
-    // Encoding clear file button
-    const encodingClearFile = document.getElementById('encodingClearFile');
-    if (encodingClearFile) {
-        encodingClearFile.addEventListener('click', clearEncodingFile);
+    // Encoding clear button
+    const encodingClearBtn = document.getElementById('encodingClearBtn');
+    if (encodingClearBtn) {
+        encodingClearBtn.addEventListener('click', clearEncodingInput);
     }
 }
 

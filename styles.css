@@ -130,6 +130,43 @@ header h1 {
     margin-bottom: 2rem;
 }
 
+.textarea-container {
+    position: relative;
+}
+
+.clear-textarea-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: rgba(239, 68, 68, 0.9);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1.2rem;
+    line-height: 1;
+    opacity: 0;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.textarea-container:hover .clear-textarea-btn,
+.clear-textarea-btn:focus {
+    opacity: 1;
+}
+
+.clear-textarea-btn:hover {
+    background: rgb(239, 68, 68);
+    transform: scale(1.1);
+}
+
+.clear-textarea-btn:active {
+    transform: scale(0.95);
+}
+
 #inputText,
 #hashInput,
 #encodingInput {

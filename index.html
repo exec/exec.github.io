@@ -5,11 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DevTools - Client-Side Utilities</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="halloween.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>DevTools</h1>
+            <h1>DevTools <span class="halloween-pumpkin">🎃</span></h1>
             <p class="subtitle">Client-side utilities for developers</p>
         </header>
 
@@ -47,16 +48,18 @@
             </div>
 
             <div class="input-section">
-                <textarea
-                    id="hashInput"
-                    placeholder="Enter text to hash..."
-                    rows="3"
-                ></textarea>
+                <div class="textarea-container">
+                    <textarea
+                        id="hashInput"
+                        placeholder="Enter text to hash..."
+                        rows="3"
+                    ></textarea>
+                    <button class="clear-textarea-btn" id="hashClearBtn" title="Clear">×</button>
+                </div>
                 <div style="margin-top: 1rem; display: flex; align-items: center; gap: 0.5rem;">
                     <input type="file" id="hashFileInput" style="display: none;" />
                     <button class="copy-btn" onclick="document.getElementById('hashFileInput').click()">Import file</button>
                     <span id="hashFileName" style="color: var(--text-secondary); font-size: 0.9rem;"></span>
-                    <button id="hashClearFile" style="display: none; background: #ef4444; color: white; border: none; border-radius: 4px; width: 24px; height: 24px; cursor: pointer; font-weight: bold; font-size: 1rem; line-height: 1;" title="Clear file">×</button>
                 </div>
             </div>
 
@@ -72,16 +75,18 @@
             </div>
 
             <div class="input-section">
-                <textarea
-                    id="encodingInput"
-                    placeholder="Enter text to encode/decode..."
-                    rows="3"
-                ></textarea>
+                <div class="textarea-container">
+                    <textarea
+                        id="encodingInput"
+                        placeholder="Enter text to encode/decode..."
+                        rows="3"
+                    ></textarea>
+                    <button class="clear-textarea-btn" id="encodingClearBtn" title="Clear">×</button>
+                </div>
                 <div style="margin-top: 1rem; display: flex; gap: 0.5rem; align-items: center;">
                     <input type="file" id="encodingFileInput" style="display: none;" />
                     <button class="copy-btn" onclick="document.getElementById('encodingFileInput').click()">Import file</button>
                     <span id="encodingFileName" style="color: var(--text-secondary); font-size: 0.9rem;"></span>
-                    <button id="encodingClearFile" style="display: none; background: #ef4444; color: white; border: none; border-radius: 4px; width: 24px; height: 24px; cursor: pointer; font-weight: bold; font-size: 1rem; line-height: 1;" title="Clear file">×</button>
                 </div>
             </div>
 
@@ -99,5 +104,6 @@
     <div class="toast" id="toast">Copied!</div>
 
     <script src="script.js"></script>
+    <script src="halloween.js"></script>
 </body>
 </html>

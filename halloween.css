@@ -1,0 +1,210 @@
+/**
+ * 🎃 HALLOWEEN THEME 2024 🎃
+ * Temporary spooky theme - remove after Halloween!
+ */
+
+/* Halloween color overrides */
+:root {
+    --halloween-orange: #ff6b1a;
+    --halloween-purple: #9333ea;
+    --halloween-green: #10b981;
+    --halloween-dark: #1a0a2e;
+    --halloween-blood: #8b0000;
+}
+
+/* Pumpkin animation */
+.halloween-pumpkin {
+    display: inline-block;
+    animation: pumpkinBob 2s ease-in-out infinite;
+    filter: drop-shadow(0 0 10px #ff6b1a);
+}
+
+@keyframes pumpkinBob {
+    0%, 100% { transform: translateY(0px) rotate(-2deg); }
+    50% { transform: translateY(-10px) rotate(2deg); }
+}
+
+/* Spooky glow on header */
+header h1 {
+    text-shadow: 0 0 20px rgba(255, 107, 26, 0.5);
+}
+
+/* Result cards get particle effects */
+.result-card {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Fade in/out animation for result text */
+.result-text {
+    animation: fadeInGhost 0.5s ease-in;
+}
+
+@keyframes fadeInGhost {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Particle container */
+.halloween-particles {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 1;
+}
+
+/* Individual particle */
+.particle {
+    position: absolute;
+    bottom: -20px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: particleRise 3s linear infinite;
+}
+
+/* Fire effect */
+.particle.fire {
+    background: radial-gradient(circle, #ff6b1a, #ff0000);
+    box-shadow: 0 0 10px #ff6b1a;
+}
+
+/* Poison/acid effect */
+.particle.poison {
+    background: radial-gradient(circle, #10b981, #047857);
+    box-shadow: 0 0 10px #10b981;
+}
+
+/* Ghost effect */
+.particle.ghost {
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.8), rgba(200, 200, 255, 0.4));
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+}
+
+/* Purple magic effect */
+.particle.magic {
+    background: radial-gradient(circle, #9333ea, #6b21a8);
+    box-shadow: 0 0 10px #9333ea;
+}
+
+/* Blood drip effect */
+.particle.blood {
+    background: linear-gradient(180deg, #8b0000, #dc2626);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    width: 6px;
+    height: 12px;
+    box-shadow: 0 0 8px #8b0000;
+}
+
+@keyframes particleRise {
+    0% {
+        bottom: -20px;
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: translateX(var(--drift, 0)) scale(1.2);
+    }
+    100% {
+        bottom: 100%;
+        opacity: 0;
+        transform: translateX(var(--drift, 0)) scale(0.5);
+    }
+}
+
+/* Spider web overlay */
+.spider-web {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.spider-web.top-left {
+    top: 0;
+    left: 0;
+    width: 200px;
+    height: 200px;
+    background:
+        linear-gradient(45deg, transparent 48%, rgba(255, 255, 255, 0.1) 48%, rgba(255, 255, 255, 0.1) 52%, transparent 52%),
+        linear-gradient(-45deg, transparent 48%, rgba(255, 255, 255, 0.1) 48%, rgba(255, 255, 255, 0.1) 52%, transparent 52%),
+        radial-gradient(circle at 0% 0%, transparent 20%, rgba(255, 255, 255, 0.05) 20%, rgba(255, 255, 255, 0.05) 21%, transparent 21%),
+        radial-gradient(circle at 0% 0%, transparent 40%, rgba(255, 255, 255, 0.05) 40%, rgba(255, 255, 255, 0.05) 41%, transparent 41%),
+        radial-gradient(circle at 0% 0%, transparent 60%, rgba(255, 255, 255, 0.05) 60%, rgba(255, 255, 255, 0.05) 61%, transparent 61%);
+}
+
+.spider-web.top-right {
+    top: 0;
+    right: 0;
+    width: 200px;
+    height: 200px;
+    background:
+        linear-gradient(-45deg, transparent 48%, rgba(255, 255, 255, 0.1) 48%, rgba(255, 255, 255, 0.1) 52%, transparent 52%),
+        linear-gradient(45deg, transparent 48%, rgba(255, 255, 255, 0.1) 48%, rgba(255, 255, 255, 0.1) 52%, transparent 52%),
+        radial-gradient(circle at 100% 0%, transparent 20%, rgba(255, 255, 255, 0.05) 20%, rgba(255, 255, 255, 0.05) 21%, transparent 21%),
+        radial-gradient(circle at 100% 0%, transparent 40%, rgba(255, 255, 255, 0.05) 40%, rgba(255, 255, 255, 0.05) 41%, transparent 41%),
+        radial-gradient(circle at 100% 0%, transparent 60%, rgba(255, 255, 255, 0.05) 60%, rgba(255, 255, 255, 0.05) 61%, transparent 61%);
+}
+
+/* Spooky cursor trail */
+body {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="%23ff6b1a"><text y="20" font-size="20">🎃</text></svg>') 12 12, auto;
+}
+
+/* Halloween tab buttons */
+.tab-button:hover {
+    box-shadow: 0 0 20px rgba(255, 107, 26, 0.3);
+}
+
+.tab-button.active {
+    box-shadow: 0 0 20px rgba(255, 107, 26, 0.5);
+}
+
+/* Copy buttons get spooky on hover */
+.copy-btn:hover {
+    box-shadow: 0 0 15px var(--halloween-orange);
+}
+
+/* Toast notification */
+.toast.show {
+    background: linear-gradient(135deg, var(--halloween-orange), var(--halloween-purple));
+    box-shadow: 0 0 30px var(--halloween-orange);
+}
+
+/* Floating ghost in background */
+@keyframes floatGhost {
+    0% {
+        transform: translate(0, 0) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.1;
+    }
+    90% {
+        opacity: 0.1;
+    }
+    100% {
+        transform: translate(100vw, -100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+.floating-ghost {
+    position: fixed;
+    font-size: 3rem;
+    pointer-events: none;
+    z-index: 1;
+    animation: floatGhost 30s linear infinite;
+}
