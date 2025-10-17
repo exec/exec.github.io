@@ -583,24 +583,6 @@ const unicodeStyles = {
         }
     },
 
-    // Keycap Emoji (numbers and #*)
-    keycapEmoji: {
-        name: 'Keycap Emoji',
-        transform: (char) => {
-            // Keycap emojis use: digit + variation selector (U+FE0F) + combining enclosing keycap (U+20E3)
-            if (char >= '0' && char <= '9') {
-                return char + '\uFE0F\u20E3';
-            }
-            if (char === '#') {
-                return '#\uFE0F\u20E3';
-            }
-            if (char === '*') {
-                return '*\uFE0F\u20E3';
-            }
-            return char;
-        }
-    },
-
     // Zalgo (Creepy)
     zalgo: {
         name: 'Zalgo (Creepy)',
