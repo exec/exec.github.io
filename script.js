@@ -625,25 +625,38 @@ const unicodeStyles = {
 
             let result = char;
             const intensity = options.intensity || 3;
+            const charIndex = options.charIndex || 0;
 
-            // Add marks from all three categories
-            const numAbove = Math.floor(Math.random() * intensity) + 1;
-            const numBelow = Math.floor(Math.random() * intensity) + 1;
-            const numMiddle = Math.floor(Math.random() * (intensity / 2)) + 1;
+            // Simple seeded random number generator for deterministic results
+            const seededRandom = (seed) => {
+                const x = Math.sin(seed) * 10000;
+                return x - Math.floor(x);
+            };
+
+            // Generate seeds based on character code and position for consistency
+            const baseSeed = char.charCodeAt(0) + charIndex * 1000;
+
+            // Deterministic number of marks based on intensity and character
+            const numAbove = Math.floor(seededRandom(baseSeed + 1) * intensity) + 1;
+            const numBelow = Math.floor(seededRandom(baseSeed + 2) * intensity) + 1;
+            const numMiddle = Math.floor(seededRandom(baseSeed + 3) * (intensity / 2)) + 1;
 
             // Add above marks
             for (let i = 0; i < numAbove; i++) {
-                result += combiningAbove[Math.floor(Math.random() * combiningAbove.length)];
+                const idx = Math.floor(seededRandom(baseSeed + 10 + i) * combiningAbove.length);
+                result += combiningAbove[idx];
             }
 
             // Add below marks
             for (let i = 0; i < numBelow; i++) {
-                result += combiningBelow[Math.floor(Math.random() * combiningBelow.length)];
+                const idx = Math.floor(seededRandom(baseSeed + 100 + i) * combiningBelow.length);
+                result += combiningBelow[idx];
             }
 
             // Add middle marks
             for (let i = 0; i < numMiddle; i++) {
-                result += combiningMiddle[Math.floor(Math.random() * combiningMiddle.length)];
+                const idx = Math.floor(seededRandom(baseSeed + 1000 + i) * combiningMiddle.length);
+                result += combiningMiddle[idx];
             }
 
             return result;
@@ -669,8 +682,10 @@ function convertText(text, style, styleKey) {
 
     // Use transform function if available
     if (style.transform) {
+        let charIndex = 0;
         for (let char of text) {
-            result += style.transform(char, options);
+            result += style.transform(char, { ...options, charIndex });
+            charIndex++;
         }
     }
     // Otherwise use character map
@@ -871,8 +886,13 @@ function switchTab(tabName) {
         content.classList.remove('active');
     });
 
-    // Remove active class from all tab buttons
-    document.querySelectorAll('.tab-button').forEach(button => {
+    // Remove active class from all dropdown items
+    document.querySelectorAll('.dropdown-item').forEach(item => {
+        item.classList.remove('active');
+    });
+
+    // Remove active class from non-dropdown tab buttons
+    document.querySelectorAll('.tab-button:not(.dropdown-toggle)').forEach(button => {
         button.classList.remove('active');
     });
 
@@ -882,19 +902,82 @@ function switchTab(tabName) {
         selectedTab.classList.add('active');
     }
 
-    // Add active class to selected button
+    // Add active class to selected button (either tab-button or dropdown-item)
     const selectedButton = document.querySelector(`[data-tab="${tabName}"]`);
     if (selectedButton) {
         selectedButton.classList.add('active');
+
+        // If it's a dropdown item, highlight the parent dropdown toggle
+        const parentDropdown = selectedButton.closest('.tab-dropdown');
+        if (parentDropdown) {
+            const dropdownToggle = parentDropdown.querySelector('.dropdown-toggle');
+            if (dropdownToggle) {
+                dropdownToggle.classList.add('active');
+            }
+        }
     }
+
+    // Close all dropdowns
+    closeAllDropdowns();
+}
+
+function toggleDropdown(dropdownId) {
+    const dropdown = document.getElementById(`${dropdownId}-dropdown`);
+    const parentContainer = dropdown.closest('.tab-dropdown');
+
+    // Close all other dropdowns
+    document.querySelectorAll('.dropdown-menu').forEach(menu => {
+        if (menu !== dropdown) {
+            menu.classList.remove('show');
+            menu.closest('.tab-dropdown').classList.remove('active');
+        }
+    });
+
+    // Toggle current dropdown
+    dropdown.classList.toggle('show');
+    parentContainer.classList.toggle('active');
+}
+
+function closeAllDropdowns() {
+    document.querySelectorAll('.dropdown-menu').forEach(menu => {
+        menu.classList.remove('show');
+        menu.closest('.tab-dropdown').classList.remove('active');
+    });
 }
 
 function initTabSwitching() {
-    document.querySelectorAll('.tab-button').forEach(button => {
+    // Handle regular tab buttons
+    document.querySelectorAll('.tab-button:not(.dropdown-toggle)').forEach(button => {
         button.addEventListener('click', (e) => {
+            const tabName = e.target.getAttribute('data-tab');
+            if (tabName) {
+                switchTab(tabName);
+            }
+        });
+    });
+
+    // Handle dropdown toggles
+    document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+        toggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const dropdownId = toggle.getAttribute('data-dropdown');
+            toggleDropdown(dropdownId);
+        });
+    });
+
+    // Handle dropdown items
+    document.querySelectorAll('.dropdown-item').forEach(item => {
+        item.addEventListener('click', (e) => {
             const tabName = e.target.getAttribute('data-tab');
             switchTab(tabName);
         });
+    });
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.tab-dropdown')) {
+            closeAllDropdowns();
+        }
     });
 }
 
@@ -1197,6 +1280,298 @@ function downloadFile(filename, content) {
 
 /**
  * =================
+ * LOREM IPSUM GENERATOR
+ * =================
+ */
+
+const loremWords = [
+    'lorem', 'ipsum', 'dolor', 'sit', 'amet', 'consectetur', 'adipiscing', 'elit', 'sed', 'do',
+    'eiusmod', 'tempor', 'incididunt', 'ut', 'labore', 'et', 'dolore', 'magna', 'aliqua', 'enim',
+    'ad', 'minim', 'veniam', 'quis', 'nostrud', 'exercitation', 'ullamco', 'laboris', 'nisi', 'aliquip',
+    'ex', 'ea', 'commodo', 'consequat', 'duis', 'aute', 'irure', 'in', 'reprehenderit', 'voluptate',
+    'velit', 'esse', 'cillum', 'fugiat', 'nulla', 'pariatur', 'excepteur', 'sint', 'occaecat', 'cupidatat',
+    'non', 'proident', 'sunt', 'culpa', 'qui', 'officia', 'deserunt', 'mollit', 'anim', 'id',
+    'est', 'laborum', 'vitae', 'risus', 'feugiat', 'lectus', 'urna', 'duis', 'convallis', 'tellus'
+];
+
+function generateLoremWords(count) {
+    const words = [];
+    for (let i = 0; i < count; i++) {
+        words.push(loremWords[Math.floor(Math.random() * loremWords.length)]);
+    }
+    return words.join(' ');
+}
+
+function generateLoremSentences(count) {
+    const sentences = [];
+    for (let i = 0; i < count; i++) {
+        const wordCount = Math.floor(Math.random() * 10) + 5;
+        let sentence = generateLoremWords(wordCount);
+        sentence = sentence.charAt(0).toUpperCase() + sentence.slice(1) + '.';
+        sentences.push(sentence);
+    }
+    return sentences.join(' ');
+}
+
+function generateLoremParagraphs(count) {
+    const paragraphs = [];
+    for (let i = 0; i < count; i++) {
+        const sentenceCount = Math.floor(Math.random() * 5) + 3;
+        paragraphs.push(generateLoremSentences(sentenceCount));
+    }
+    return paragraphs;
+}
+
+function generateLorem() {
+    const type = document.getElementById('loremType').value;
+    const count = parseInt(document.getElementById('loremCount').value) || 5;
+    const resultsContainer = document.getElementById('loremResults');
+
+    resultsContainer.innerHTML = '';
+
+    let content;
+    if (type === 'words') {
+        content = generateLoremWords(count);
+        const card = createSimpleCard('Generated Text', content);
+        resultsContainer.appendChild(card);
+    } else if (type === 'sentences') {
+        content = generateLoremSentences(count);
+        const card = createSimpleCard('Generated Text', content);
+        resultsContainer.appendChild(card);
+    } else {
+        // paragraphs
+        const paragraphs = generateLoremParagraphs(count);
+        paragraphs.forEach((para, index) => {
+            const card = createSimpleCard(`Paragraph ${index + 1}`, para);
+            resultsContainer.appendChild(card);
+        });
+    }
+}
+
+/**
+ * =================
+ * JWT DECODER
+ * =================
+ */
+
+function decodeJWT() {
+    const jwtInput = document.getElementById('jwtInput').value.trim();
+    const resultsContainer = document.getElementById('jwtResults');
+
+    resultsContainer.innerHTML = '';
+
+    if (!jwtInput) {
+        return;
+    }
+
+    try {
+        const parts = jwtInput.split('.');
+        if (parts.length !== 3) {
+            throw new Error('Invalid JWT format. Expected 3 parts separated by dots.');
+        }
+
+        // Decode header
+        const headerJson = atob(parts[0].replace(/-/g, '+').replace(/_/g, '/'));
+        const header = JSON.parse(headerJson);
+        const headerCard = createSimpleCard('Header', JSON.stringify(header, null, 2));
+        resultsContainer.appendChild(headerCard);
+
+        // Decode payload
+        const payloadJson = atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'));
+        const payload = JSON.parse(payloadJson);
+        const payloadCard = createSimpleCard('Payload', JSON.stringify(payload, null, 2));
+        resultsContainer.appendChild(payloadCard);
+
+        // Signature note
+        const signatureCard = createSimpleCard('Signature', `${parts[2]}\n\n⚠️ Signature verification not performed (client-side only)`);
+        resultsContainer.appendChild(signatureCard);
+
+    } catch (error) {
+        const errorCard = createSimpleCard('Error', `Failed to decode JWT: ${error.message}`);
+        resultsContainer.appendChild(errorCard);
+    }
+}
+
+function clearJWT() {
+    document.getElementById('jwtInput').value = '';
+    document.getElementById('jwtResults').innerHTML = '';
+}
+
+/**
+ * =================
+ * JSON FORMATTER
+ * =================
+ */
+
+function formatJSON() {
+    const jsonInput = document.getElementById('jsonInput').value.trim();
+    const resultsContainer = document.getElementById('jsonResults');
+
+    resultsContainer.innerHTML = '';
+
+    if (!jsonInput) {
+        return;
+    }
+
+    try {
+        const parsed = JSON.parse(jsonInput);
+
+        // Formatted (pretty)
+        const formatted = JSON.stringify(parsed, null, 2);
+        const formattedCard = createSimpleCard('Formatted (Pretty)', formatted);
+        resultsContainer.appendChild(formattedCard);
+
+        // Minified
+        const minified = JSON.stringify(parsed);
+        const minifiedCard = createSimpleCard('Minified', minified);
+        resultsContainer.appendChild(minifiedCard);
+
+        // Validation success
+        const validCard = createSimpleCard('Validation', '✅ Valid JSON');
+        resultsContainer.appendChild(validCard);
+
+    } catch (error) {
+        const errorCard = createSimpleCard('Error', `❌ Invalid JSON\n\n${error.message}`);
+        resultsContainer.appendChild(errorCard);
+    }
+}
+
+function clearJSON() {
+    document.getElementById('jsonInput').value = '';
+    document.getElementById('jsonResults').innerHTML = '';
+}
+
+/**
+ * =================
+ * UUID GENERATOR
+ * =================
+ */
+
+function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
+
+function generateUUIDs() {
+    const count = parseInt(document.getElementById('uuidCount').value) || 10;
+    const resultsContainer = document.getElementById('uuidResults');
+
+    resultsContainer.innerHTML = '';
+
+    const uuids = [];
+    for (let i = 0; i < count; i++) {
+        uuids.push(generateUUID());
+    }
+
+    const uuidText = uuids.join('\n');
+    const card = createSimpleCard(`${count} UUIDs`, uuidText);
+    resultsContainer.appendChild(card);
+}
+
+/**
+ * =================
+ * TIMESTAMP CONVERTER
+ * =================
+ */
+
+function convertTimestamp() {
+    const timestampInput = document.getElementById('timestampInput').value.trim();
+    const resultsContainer = document.getElementById('timestampResults');
+
+    resultsContainer.innerHTML = '';
+
+    if (!timestampInput) {
+        return;
+    }
+
+    try {
+        let timestamp = parseInt(timestampInput);
+
+        // Detect if it's in milliseconds or seconds
+        if (timestamp < 10000000000) {
+            // Seconds
+            timestamp = timestamp * 1000;
+        }
+
+        const date = new Date(timestamp);
+
+        if (isNaN(date.getTime())) {
+            throw new Error('Invalid timestamp');
+        }
+
+        // ISO 8601
+        const isoCard = createSimpleCard('ISO 8601', date.toISOString());
+        resultsContainer.appendChild(isoCard);
+
+        // UTC
+        const utcCard = createSimpleCard('UTC', date.toUTCString());
+        resultsContainer.appendChild(utcCard);
+
+        // Local
+        const localCard = createSimpleCard('Local Time', date.toLocaleString());
+        resultsContainer.appendChild(localCard);
+
+        // Unix Timestamp (seconds)
+        const unixSecondsCard = createSimpleCard('Unix Timestamp (seconds)', Math.floor(date.getTime() / 1000).toString());
+        resultsContainer.appendChild(unixSecondsCard);
+
+        // Unix Timestamp (milliseconds)
+        const unixMillisCard = createSimpleCard('Unix Timestamp (milliseconds)', date.getTime().toString());
+        resultsContainer.appendChild(unixMillisCard);
+
+    } catch (error) {
+        const errorCard = createSimpleCard('Error', `Failed to convert timestamp: ${error.message}`);
+        resultsContainer.appendChild(errorCard);
+    }
+}
+
+function showCurrentTimestamp() {
+    const now = new Date();
+    const timestampInput = document.getElementById('timestampInput');
+    timestampInput.value = Math.floor(now.getTime() / 1000).toString();
+    convertTimestamp();
+}
+
+function dateToTimestamp() {
+    const dateInput = document.getElementById('dateInput').value;
+    const resultsContainer = document.getElementById('timestampResults');
+
+    resultsContainer.innerHTML = '';
+
+    if (!dateInput) {
+        return;
+    }
+
+    try {
+        const date = new Date(dateInput);
+
+        if (isNaN(date.getTime())) {
+            throw new Error('Invalid date');
+        }
+
+        // Unix Timestamp (seconds)
+        const unixSecondsCard = createSimpleCard('Unix Timestamp (seconds)', Math.floor(date.getTime() / 1000).toString());
+        resultsContainer.appendChild(unixSecondsCard);
+
+        // Unix Timestamp (milliseconds)
+        const unixMillisCard = createSimpleCard('Unix Timestamp (milliseconds)', date.getTime().toString());
+        resultsContainer.appendChild(unixMillisCard);
+
+        // ISO 8601
+        const isoCard = createSimpleCard('ISO 8601', date.toISOString());
+        resultsContainer.appendChild(isoCard);
+
+    } catch (error) {
+        const errorCard = createSimpleCard('Error', `Failed to convert date: ${error.message}`);
+        resultsContainer.appendChild(errorCard);
+    }
+}
+
+/**
+ * =================
  * HELPER FUNCTIONS
  * =================
  */
@@ -1374,6 +1749,56 @@ function init() {
     const encodingClearBtn = document.getElementById('encodingClearBtn');
     if (encodingClearBtn) {
         encodingClearBtn.addEventListener('click', clearEncodingInput);
+    }
+
+    // Lorem Ipsum Generator
+    const generateLoremBtn = document.getElementById('generateLoremBtn');
+    if (generateLoremBtn) {
+        generateLoremBtn.addEventListener('click', generateLorem);
+    }
+
+    // JWT Decoder
+    const jwtInput = document.getElementById('jwtInput');
+    if (jwtInput) {
+        jwtInput.addEventListener('input', decodeJWT);
+    }
+
+    const jwtClearBtn = document.getElementById('jwtClearBtn');
+    if (jwtClearBtn) {
+        jwtClearBtn.addEventListener('click', clearJWT);
+    }
+
+    // JSON Formatter
+    const jsonInput = document.getElementById('jsonInput');
+    if (jsonInput) {
+        jsonInput.addEventListener('input', formatJSON);
+    }
+
+    const jsonClearBtn = document.getElementById('jsonClearBtn');
+    if (jsonClearBtn) {
+        jsonClearBtn.addEventListener('click', clearJSON);
+    }
+
+    // UUID Generator
+    const generateUuidBtn = document.getElementById('generateUuidBtn');
+    if (generateUuidBtn) {
+        generateUuidBtn.addEventListener('click', generateUUIDs);
+    }
+
+    // Timestamp Converter
+    const convertTimestampBtn = document.getElementById('convertTimestampBtn');
+    if (convertTimestampBtn) {
+        convertTimestampBtn.addEventListener('click', convertTimestamp);
+    }
+
+    const currentTimestampBtn = document.getElementById('currentTimestampBtn');
+    if (currentTimestampBtn) {
+        currentTimestampBtn.addEventListener('click', showCurrentTimestamp);
+    }
+
+    const dateToTimestampBtn = document.getElementById('dateToTimestampBtn');
+    if (dateToTimestampBtn) {
+        dateToTimestampBtn.addEventListener('click', dateToTimestamp);
     }
 }
 

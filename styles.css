@@ -96,6 +96,89 @@ header h1 {
     border-bottom-color: var(--primary-color);
 }
 
+/* Dropdown Tabs */
+.tab-dropdown {
+    position: relative;
+}
+
+.dropdown-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.dropdown-arrow {
+    font-size: 0.75rem;
+    transition: transform 0.2s ease;
+}
+
+.tab-dropdown.active .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 200px;
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-lg);
+    margin-top: 0.25rem;
+    z-index: 100;
+    animation: dropdownFadeIn 0.2s ease;
+}
+
+.dropdown-menu.show {
+    display: block;
+}
+
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdown-item {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    font-family: inherit;
+}
+
+.dropdown-item:first-child {
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+}
+
+.dropdown-item:last-child {
+    border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+}
+
+.dropdown-item:hover {
+    background: rgba(129, 140, 248, 0.1);
+    color: var(--text-primary);
+}
+
+.dropdown-item.active {
+    background: var(--primary-color);
+    color: white;
+}
+
 /* Tab Content */
 .tab-content {
     display: none;
@@ -196,6 +279,65 @@ header h1 {
 #encodingInput::placeholder {
     color: var(--text-secondary);
     opacity: 0.6;
+}
+
+/* New Tool Inputs */
+#jwtInput,
+#jsonInput {
+    width: 100%;
+    padding: 1.25rem;
+    font-size: 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius);
+    background: var(--card-background);
+    color: var(--text-primary);
+    resize: vertical;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow-sm);
+}
+
+#jwtInput:focus,
+#jsonInput:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-md), 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+#jwtInput::placeholder,
+#jsonInput::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.6;
+}
+
+.lorem-select,
+.lorem-input,
+.timestamp-input {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background: var(--card-background);
+    color: var(--text-primary);
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+.lorem-select:focus,
+.lorem-input:focus,
+.timestamp-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.lorem-input {
+    width: 80px;
+}
+
+.timestamp-input {
+    flex: 1;
+    min-width: 200px;
 }
 
 /* Results Section */
