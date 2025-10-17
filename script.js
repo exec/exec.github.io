@@ -661,6 +661,8 @@ function convertText(text, style, styleKey) {
 function createResultCard(styleKey, style, convertedText) {
     const card = document.createElement('div');
     card.className = 'result-card';
+    card.id = `card-${styleKey}`;
+    card.setAttribute('data-style-key', styleKey);
 
     // Add options panel if the style has options
     if (style.hasOptions && style.options) {
@@ -736,7 +738,8 @@ function createOptionsPanel(styleKey, options) {
             const newValue = parseInt(e.target.value);
             value.textContent = newValue;
             styleOptions[styleKey][optionKey] = newValue;
-            updateConversions();
+            // Only update this specific style's text, don't regenerate all cards
+            updateSingleStyle(styleKey);
         });
 
         group.appendChild(label);
@@ -774,6 +777,31 @@ function showToast() {
     setTimeout(() => {
         toast.classList.remove('show');
     }, 2000);
+}
+
+/**
+ * Update a single style's converted text without recreating the card
+ */
+function updateSingleStyle(styleKey) {
+    const inputText = document.getElementById('inputText').value;
+    const card = document.getElementById(`card-${styleKey}`);
+
+    if (!card) return;
+
+    const style = unicodeStyles[styleKey];
+    const converted = convertText(inputText, style, styleKey);
+
+    // Update the result text
+    const textDiv = card.querySelector('.result-text');
+    if (textDiv) {
+        textDiv.textContent = converted;
+    }
+
+    // Update the copy button
+    const copyBtn = card.querySelector('.copy-btn');
+    if (copyBtn) {
+        copyBtn.setAttribute('data-text', converted);
+    }
 }
 
 /**
@@ -847,6 +875,12 @@ async function generateHash(text, algorithm) {
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
+async function generateHashFromArrayBuffer(arrayBuffer, algorithm) {
+    const hashBuffer = await crypto.subtle.digest(algorithm, arrayBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 function updateHashes() {
     const inputText = document.getElementById('hashInput').value;
     const resultsContainer = document.getElementById('hashResults');
@@ -874,6 +908,49 @@ function updateHashes() {
             console.error(`Error generating ${name}:`, error);
         }
     });
+}
+
+function handleHashFileImport(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Display filename
+    const fileNameSpan = document.getElementById('hashFileName');
+    fileNameSpan.textContent = `File: ${file.name} (${formatFileSize(file.size)})`;
+
+    const resultsContainer = document.getElementById('hashResults');
+    resultsContainer.innerHTML = '';
+
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+        const arrayBuffer = e.target.result;
+
+        const algorithms = [
+            { name: 'SHA-1', algo: 'SHA-1' },
+            { name: 'SHA-256', algo: 'SHA-256' },
+            { name: 'SHA-384', algo: 'SHA-384' },
+            { name: 'SHA-512', algo: 'SHA-512' }
+        ];
+
+        for (let { name, algo } of algorithms) {
+            try {
+                const hash = await generateHashFromArrayBuffer(arrayBuffer, algo);
+                const card = createSimpleCard(name, hash);
+                resultsContainer.appendChild(card);
+            } catch (error) {
+                console.error(`Error generating ${name}:`, error);
+            }
+        }
+    };
+    reader.readAsArrayBuffer(file);
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
 }
 
 /**
@@ -982,7 +1059,7 @@ function updateEncodings() {
     for (let [name, func] of Object.entries(encodingFunctions)) {
         try {
             const result = func(inputText);
-            const card = createSimpleCard(name, result);
+            const card = createEncodingCard(name, result);
             resultsContainer.appendChild(card);
         } catch (error) {
             console.error(`Error with ${name}:`, error);
@@ -990,49 +1067,34 @@ function updateEncodings() {
     }
 }
 
-/**
- * =================
- * DOCS NAVIGATION
- * =================
- */
+function handleEncodingFileImport(event) {
+    const file = event.target.files[0];
+    if (!file) return;
 
-function switchDoc(docName) {
-    // Hide all doc articles
-    document.querySelectorAll('.doc-article').forEach(article => {
-        article.classList.remove('active');
-    });
+    // Display filename
+    const fileNameSpan = document.getElementById('encodingFileName');
+    fileNameSpan.textContent = `File: ${file.name} (${formatFileSize(file.size)})`;
 
-    // Remove active class from all doc links
-    document.querySelectorAll('.doc-link').forEach(link => {
-        link.classList.remove('active');
-    });
-
-    // Show selected doc article
-    const selectedDoc = document.getElementById(`doc-${docName}`);
-    if (selectedDoc) {
-        selectedDoc.classList.add('active');
-    }
-
-    // Add active class to selected link
-    const selectedLink = document.querySelector(`[data-doc="${docName}"]`);
-    if (selectedLink) {
-        selectedLink.classList.add('active');
-    }
-
-    // Scroll to top of docs content
-    const docsContent = document.querySelector('.docs-content');
-    if (docsContent) {
-        docsContent.scrollTop = 0;
-    }
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const text = e.target.result;
+        const encodingInput = document.getElementById('encodingInput');
+        encodingInput.value = text;
+        updateEncodings();
+    };
+    reader.readAsText(file);
 }
 
-function initDocsNavigation() {
-    document.querySelectorAll('.doc-link').forEach(link => {
-        link.addEventListener('click', (e) => {
-            const docName = e.target.getAttribute('data-doc');
-            switchDoc(docName);
-        });
-    });
+function downloadFile(filename, content) {
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 }
 
 /**
@@ -1071,6 +1133,52 @@ function createSimpleCard(title, content) {
     return card;
 }
 
+function createEncodingCard(title, content) {
+    const card = document.createElement('div');
+    card.className = 'result-card';
+
+    const header = document.createElement('div');
+    header.className = 'result-header';
+
+    const label = document.createElement('div');
+    label.className = 'result-label';
+    label.textContent = title;
+
+    const buttonContainer = document.createElement('div');
+    buttonContainer.style.display = 'flex';
+    buttonContainer.style.gap = '0.5rem';
+
+    const copyBtn = document.createElement('button');
+    copyBtn.className = 'copy-btn';
+    copyBtn.textContent = 'Copy';
+    copyBtn.setAttribute('data-text', content);
+    copyBtn.addEventListener('click', handleCopy);
+
+    const exportBtn = document.createElement('button');
+    exportBtn.className = 'copy-btn';
+    exportBtn.textContent = 'Export file';
+    exportBtn.style.background = 'var(--primary-hover)';
+    exportBtn.addEventListener('click', () => {
+        const sanitizedTitle = title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+        downloadFile(`${sanitizedTitle}.txt`, content);
+    });
+
+    buttonContainer.appendChild(copyBtn);
+    buttonContainer.appendChild(exportBtn);
+
+    header.appendChild(label);
+    header.appendChild(buttonContainer);
+
+    const textDiv = document.createElement('div');
+    textDiv.className = 'result-text';
+    textDiv.textContent = content;
+
+    card.appendChild(header);
+    card.appendChild(textDiv);
+
+    return card;
+}
+
 /**
  * =================
  * INITIALIZATION
@@ -1080,9 +1188,6 @@ function createSimpleCard(title, content) {
 function init() {
     // Initialize tab switching
     initTabSwitching();
-
-    // Initialize docs navigation
-    initDocsNavigation();
 
     // Unicode converter
     const inputText = document.getElementById('inputText');
@@ -1099,10 +1204,22 @@ function init() {
         hashInput.addEventListener('input', updateHashes);
     }
 
+    // Hash file import
+    const hashFileInput = document.getElementById('hashFileInput');
+    if (hashFileInput) {
+        hashFileInput.addEventListener('change', handleHashFileImport);
+    }
+
     // Encoding utilities
     const encodingInput = document.getElementById('encodingInput');
     if (encodingInput) {
         encodingInput.addEventListener('input', updateEncodings);
+    }
+
+    // Encoding file import
+    const encodingFileInput = document.getElementById('encodingFileInput');
+    if (encodingFileInput) {
+        encodingFileInput.addEventListener('change', handleEncodingFileImport);
     }
 }
 

@@ -18,7 +18,6 @@
             <button class="tab-button active" data-tab="unicode">Unicode Converter</button>
             <button class="tab-button" data-tab="hash">Hash Generator</button>
             <button class="tab-button" data-tab="encoding">Encoding & Text</button>
-            <button class="tab-button" data-tab="docs">Docs</button>
         </nav>
 
         <!-- Unicode Converter Tab -->
@@ -44,7 +43,7 @@
         <!-- Hash Generator Tab -->
         <div class="tab-content" id="hash-tab">
             <div class="tool-description">
-                <p>Generate cryptographic hashes from your input text</p>
+                <p>Generate cryptographic hashes from your input text or file</p>
             </div>
 
             <div class="input-section">
@@ -53,6 +52,11 @@
                     placeholder="Enter text to hash..."
                     rows="3"
                 ></textarea>
+                <div style="margin-top: 1rem;">
+                    <input type="file" id="hashFileInput" style="display: none;" />
+                    <button class="copy-btn" onclick="document.getElementById('hashFileInput').click()">Import file</button>
+                    <span id="hashFileName" style="margin-left: 1rem; color: var(--text-secondary); font-size: 0.9rem;"></span>
+                </div>
             </div>
 
             <div class="results-section" id="hashResults">
@@ -63,7 +67,7 @@
         <!-- Encoding & Text Tab -->
         <div class="tab-content" id="encoding-tab">
             <div class="tool-description">
-                <p>Encode, decode, and manipulate text</p>
+                <p>Encode, decode, and manipulate text or files</p>
             </div>
 
             <div class="input-section">
@@ -72,178 +76,15 @@
                     placeholder="Enter text to encode/decode..."
                     rows="3"
                 ></textarea>
+                <div style="margin-top: 1rem; display: flex; gap: 0.5rem; align-items: center;">
+                    <input type="file" id="encodingFileInput" style="display: none;" />
+                    <button class="copy-btn" onclick="document.getElementById('encodingFileInput').click()">Import file</button>
+                    <span id="encodingFileName" style="color: var(--text-secondary); font-size: 0.9rem;"></span>
+                </div>
             </div>
 
             <div class="results-section" id="encodingResults">
                 <!-- Encoding results will be dynamically generated here -->
-            </div>
-        </div>
-
-        <!-- Docs Tab -->
-        <div class="tab-content" id="docs-tab">
-            <div class="docs-container">
-                <aside class="docs-sidebar">
-                    <h3>Projects</h3>
-                    <nav class="docs-nav">
-                        <button class="doc-link active" data-doc="devtools">DevTools</button>
-                        <button class="doc-link" data-doc="getting-started">Getting Started</button>
-                        <div class="docs-divider"></div>
-                        <p class="docs-section-title">Your Projects</p>
-                        <button class="doc-link" data-doc="add-project">+ Add Project Docs</button>
-                    </nav>
-                </aside>
-                <main class="docs-content">
-                    <article id="doc-devtools" class="doc-article active">
-                        <h1>DevTools Documentation</h1>
-                        <p class="doc-meta">Client-side developer utilities</p>
-
-                        <h2>Overview</h2>
-                        <p>DevTools is a collection of client-side utilities for developers. All operations happen locally in your browser - no data is sent to any server.</p>
-
-                        <h2>Available Tools</h2>
-
-                        <h3>Unicode Converter</h3>
-                        <p>Transform text into 38+ different Unicode styles including:</p>
-                        <ul>
-                            <li>Mathematical variants (bold, italic, script, fraktur)</li>
-                            <li>Styled text (circled, squared, parenthesized)</li>
-                            <li>Special effects (inverted, reversed, strikethrough)</li>
-                            <li>Zalgo text with adjustable intensity</li>
-                        </ul>
-
-                        <h3>Hash Generator</h3>
-                        <p>Generate cryptographic hashes using the Web Crypto API:</p>
-                        <ul>
-                            <li><strong>SHA-1:</strong> 160-bit hash (legacy, not recommended for security)</li>
-                            <li><strong>SHA-256:</strong> 256-bit hash (most common, recommended)</li>
-                            <li><strong>SHA-384:</strong> 384-bit hash (extended security)</li>
-                            <li><strong>SHA-512:</strong> 512-bit hash (maximum security)</li>
-                        </ul>
-
-                        <h3>Encoding & Text Utilities</h3>
-                        <p>Comprehensive text encoding, decoding, and manipulation:</p>
-                        <ul>
-                            <li><strong>Encoding:</strong> Base64, URL, HTML entities, Hex, Binary</li>
-                            <li><strong>Text Tools:</strong> Case conversion, word count, line sorting, duplicate removal</li>
-                        </ul>
-
-                        <h2>Features</h2>
-                        <ul>
-                            <li>✅ 100% client-side processing</li>
-                            <li>✅ No data leaves your browser</li>
-                            <li>✅ Real-time results as you type</li>
-                            <li>✅ Dark mode interface</li>
-                            <li>✅ One-click copy buttons</li>
-                            <li>✅ Mobile responsive</li>
-                        </ul>
-
-                        <h2>Technology</h2>
-                        <p>Built with vanilla JavaScript, HTML5, and CSS3. No frameworks, no build process, no dependencies.</p>
-
-                        <h2>Contributing</h2>
-                        <p>This is an open-source project. Feel free to fork, modify, and extend it for your needs.</p>
-                    </article>
-
-                    <article id="doc-getting-started" class="doc-article">
-                        <h1>Getting Started</h1>
-                        <p class="doc-meta">Quick start guide</p>
-
-                        <h2>Using DevTools</h2>
-                        <p>Simply navigate to any tab and start typing. All conversions happen in real-time.</p>
-
-                        <h3>Unicode Converter</h3>
-                        <ol>
-                            <li>Click the "Unicode Converter" tab</li>
-                            <li>Type or paste text into the input field</li>
-                            <li>Browse the results below</li>
-                            <li>Click "Copy" on any style you want to use</li>
-                            <li>Adjust the Zalgo intensity slider for custom creepiness levels</li>
-                        </ol>
-
-                        <h3>Hash Generator</h3>
-                        <ol>
-                            <li>Click the "Hash Generator" tab</li>
-                            <li>Enter the text you want to hash</li>
-                            <li>View SHA-1, SHA-256, SHA-384, and SHA-512 hashes instantly</li>
-                            <li>Click "Copy" to copy any hash to your clipboard</li>
-                        </ol>
-
-                        <h3>Encoding & Text</h3>
-                        <ol>
-                            <li>Click the "Encoding & Text" tab</li>
-                            <li>Enter your text</li>
-                            <li>See all encoding/decoding/manipulation results</li>
-                            <li>Copy any result with one click</li>
-                        </ol>
-
-                        <h2>Keyboard Shortcuts</h2>
-                        <p>All input fields support standard keyboard shortcuts:</p>
-                        <ul>
-                            <li><code>Ctrl/Cmd + A</code> - Select all</li>
-                            <li><code>Ctrl/Cmd + C</code> - Copy</li>
-                            <li><code>Ctrl/Cmd + V</code> - Paste</li>
-                        </ul>
-
-                        <h2>Browser Compatibility</h2>
-                        <p>DevTools works in all modern browsers:</p>
-                        <ul>
-                            <li>Chrome/Edge 60+</li>
-                            <li>Firefox 60+</li>
-                            <li>Safari 11+</li>
-                            <li>Opera 47+</li>
-                        </ul>
-
-                        <h2>Privacy</h2>
-                        <p>All processing happens locally in your browser. No data is collected, stored, or transmitted to any server.</p>
-                    </article>
-
-                    <article id="doc-add-project" class="doc-article">
-                        <h1>Add Your Project Documentation</h1>
-                        <p class="doc-meta">Extend this docs section with your own projects</p>
-
-                        <h2>How to Add Docs</h2>
-                        <p>To add documentation for your projects:</p>
-
-                        <h3>Option 1: Edit HTML Directly</h3>
-                        <ol>
-                            <li>Open <code>index.html</code></li>
-                            <li>Find the <code>.docs-sidebar</code> section</li>
-                            <li>Add a new button: <code>&lt;button class="doc-link" data-doc="your-project"&gt;Your Project&lt;/button&gt;</code></li>
-                            <li>Add a new article in <code>.docs-content</code>:
-                                <pre><code>&lt;article id="doc-your-project" class="doc-article"&gt;
-  &lt;h1&gt;Your Project&lt;/h1&gt;
-  &lt;p&gt;Documentation content...&lt;/p&gt;
-&lt;/article&gt;</code></pre>
-                            </li>
-                        </ol>
-
-                        <h3>Option 2: Add Markdown Support</h3>
-                        <p>You can add a markdown parser library like <a href="https://marked.js.org/" target="_blank">marked.js</a> to write docs in Markdown format.</p>
-
-                        <h3>Option 3: Load from External Files</h3>
-                        <p>Create separate HTML or Markdown files and load them dynamically with JavaScript.</p>
-
-                        <h2>Documentation Structure</h2>
-                        <p>Each documentation article should include:</p>
-                        <ul>
-                            <li><strong>Title:</strong> Clear project name</li>
-                            <li><strong>Overview:</strong> Brief description</li>
-                            <li><strong>Installation:</strong> How to set up</li>
-                            <li><strong>Usage:</strong> Examples and guides</li>
-                            <li><strong>API Reference:</strong> If applicable</li>
-                            <li><strong>Contributing:</strong> How to contribute</li>
-                        </ul>
-
-                        <h2>Styling</h2>
-                        <p>The documentation uses the same dark theme as the rest of DevTools. All standard HTML elements are automatically styled:</p>
-                        <ul>
-                            <li>Headings (h1-h6)</li>
-                            <li>Paragraphs and lists</li>
-                            <li>Code blocks and inline code</li>
-                            <li>Links and emphasis</li>
-                        </ul>
-                    </article>
-                </main>
             </div>
         </div>
 
