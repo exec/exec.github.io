@@ -875,12 +875,6 @@ async function generateHash(text, algorithm) {
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-async function generateHashFromArrayBuffer(arrayBuffer, algorithm) {
-    const hashBuffer = await crypto.subtle.digest(algorithm, arrayBuffer);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
 function updateHashes() {
     const inputText = document.getElementById('hashInput').value;
     const resultsContainer = document.getElementById('hashResults');
@@ -902,7 +896,7 @@ function updateHashes() {
     algorithms.forEach(async ({ name, algo }) => {
         try {
             const hash = await generateHash(inputText, algo);
-            const card = createSimpleCard(name, hash);
+            const card = createEncodingCard(name, hash);
             resultsContainer.appendChild(card);
         } catch (error) {
             console.error(`Error generating ${name}:`, error);
@@ -914,35 +908,30 @@ function handleHashFileImport(event) {
     const file = event.target.files[0];
     if (!file) return;
 
-    // Display filename
+    // Display filename and show clear button
     const fileNameSpan = document.getElementById('hashFileName');
+    const clearBtn = document.getElementById('hashClearFile');
     fileNameSpan.textContent = `File: ${file.name} (${formatFileSize(file.size)})`;
-
-    const resultsContainer = document.getElementById('hashResults');
-    resultsContainer.innerHTML = '';
+    clearBtn.style.display = 'block';
 
     const reader = new FileReader();
-    reader.onload = async function(e) {
-        const arrayBuffer = e.target.result;
-
-        const algorithms = [
-            { name: 'SHA-1', algo: 'SHA-1' },
-            { name: 'SHA-256', algo: 'SHA-256' },
-            { name: 'SHA-384', algo: 'SHA-384' },
-            { name: 'SHA-512', algo: 'SHA-512' }
-        ];
-
-        for (let { name, algo } of algorithms) {
-            try {
-                const hash = await generateHashFromArrayBuffer(arrayBuffer, algo);
-                const card = createSimpleCard(name, hash);
-                resultsContainer.appendChild(card);
-            } catch (error) {
-                console.error(`Error generating ${name}:`, error);
-            }
-        }
+    reader.onload = function(e) {
+        const text = e.target.result;
+        const hashInput = document.getElementById('hashInput');
+        hashInput.value = text;
+        updateHashes();
     };
-    reader.readAsArrayBuffer(file);
+    reader.readAsText(file);
+}
+
+function clearHashFile() {
+    const fileInput = document.getElementById('hashFileInput');
+    const fileNameSpan = document.getElementById('hashFileName');
+    const clearBtn = document.getElementById('hashClearFile');
+
+    fileInput.value = '';
+    fileNameSpan.textContent = '';
+    clearBtn.style.display = 'none';
 }
 
 function formatFileSize(bytes) {
@@ -1071,9 +1060,11 @@ function handleEncodingFileImport(event) {
     const file = event.target.files[0];
     if (!file) return;
 
-    // Display filename
+    // Display filename and show clear button
     const fileNameSpan = document.getElementById('encodingFileName');
+    const clearBtn = document.getElementById('encodingClearFile');
     fileNameSpan.textContent = `File: ${file.name} (${formatFileSize(file.size)})`;
+    clearBtn.style.display = 'block';
 
     const reader = new FileReader();
     reader.onload = function(e) {
@@ -1083,6 +1074,16 @@ function handleEncodingFileImport(event) {
         updateEncodings();
     };
     reader.readAsText(file);
+}
+
+function clearEncodingFile() {
+    const fileInput = document.getElementById('encodingFileInput');
+    const fileNameSpan = document.getElementById('encodingFileName');
+    const clearBtn = document.getElementById('encodingClearFile');
+
+    fileInput.value = '';
+    fileNameSpan.textContent = '';
+    clearBtn.style.display = 'none';
 }
 
 function downloadFile(filename, content) {
@@ -1201,25 +1202,67 @@ function init() {
     // Hash generator
     const hashInput = document.getElementById('hashInput');
     if (hashInput) {
-        hashInput.addEventListener('input', updateHashes);
+        let isFileImport = false;
+        hashInput.addEventListener('input', (e) => {
+            // If user is typing (not from file import), clear the file reference
+            if (!isFileImport && document.getElementById('hashFileName').textContent) {
+                clearHashFile();
+            }
+            isFileImport = false;
+            updateHashes();
+        });
+
+        // Override file import to set flag
+        const originalHashFileImport = handleHashFileImport;
+        window.handleHashFileImport = function(event) {
+            isFileImport = true;
+            originalHashFileImport.call(this, event);
+        };
     }
 
     // Hash file import
     const hashFileInput = document.getElementById('hashFileInput');
     if (hashFileInput) {
-        hashFileInput.addEventListener('change', handleHashFileImport);
+        hashFileInput.addEventListener('change', window.handleHashFileImport || handleHashFileImport);
+    }
+
+    // Hash clear file button
+    const hashClearFile = document.getElementById('hashClearFile');
+    if (hashClearFile) {
+        hashClearFile.addEventListener('click', clearHashFile);
     }
 
     // Encoding utilities
     const encodingInput = document.getElementById('encodingInput');
     if (encodingInput) {
-        encodingInput.addEventListener('input', updateEncodings);
+        let isFileImport = false;
+        encodingInput.addEventListener('input', (e) => {
+            // If user is typing (not from file import), clear the file reference
+            if (!isFileImport && document.getElementById('encodingFileName').textContent) {
+                clearEncodingFile();
+            }
+            isFileImport = false;
+            updateEncodings();
+        });
+
+        // Override file import to set flag
+        const originalEncodingFileImport = handleEncodingFileImport;
+        window.handleEncodingFileImport = function(event) {
+            isFileImport = true;
+            originalEncodingFileImport.call(this, event);
+        };
     }
 
     // Encoding file import
     const encodingFileInput = document.getElementById('encodingFileInput');
     if (encodingFileInput) {
-        encodingFileInput.addEventListener('change', handleEncodingFileImport);
+        encodingFileInput.addEventListener('change', window.handleEncodingFileImport || handleEncodingFileImport);
+    }
+
+    // Encoding clear file button
+    const encodingClearFile = document.getElementById('encodingClearFile');
+    if (encodingClearFile) {
+        encodingClearFile.addEventListener('click', clearEncodingFile);
     }
 }
 
