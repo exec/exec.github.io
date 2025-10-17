@@ -593,22 +593,59 @@ const unicodeStyles = {
         transform: (char, options = {}) => {
             if (char === ' ' || char === '\n') return char;
 
-            const combining = [
+            // Combining marks above (diacritics above)
+            const combiningAbove = [
                 '\u0300', '\u0301', '\u0302', '\u0303', '\u0304', '\u0305', '\u0306', '\u0307',
                 '\u0308', '\u0309', '\u030A', '\u030B', '\u030C', '\u030D', '\u030E', '\u030F',
-                '\u0310', '\u0311', '\u0312', '\u0313', '\u0314', '\u031B', '\u033D', '\u033E',
-                '\u033F', '\u0340', '\u0341', '\u0342', '\u0343', '\u0344', '\u0346', '\u034A',
-                '\u034B', '\u034C', '\u0350', '\u0351', '\u0352', '\u0357', '\u035B', '\u0363',
-                '\u0364', '\u0365', '\u0366', '\u0367', '\u0368', '\u0369', '\u036A', '\u036B',
-                '\u036C', '\u036D', '\u036E', '\u036F'
+                '\u0310', '\u0311', '\u0312', '\u0313', '\u0314', '\u031A', '\u031B', '\u033D',
+                '\u033E', '\u033F', '\u0340', '\u0341', '\u0342', '\u0343', '\u0344', '\u0346',
+                '\u034A', '\u034B', '\u034C', '\u0350', '\u0351', '\u0352', '\u0357', '\u0358',
+                '\u035B', '\u035D', '\u035E', '\u0360', '\u0361'
+            ];
+
+            // Combining marks below (diacritics below)
+            const combiningBelow = [
+                '\u0316', '\u0317', '\u0318', '\u0319', '\u031C', '\u031D', '\u031E', '\u031F',
+                '\u0320', '\u0321', '\u0322', '\u0323', '\u0324', '\u0325', '\u0326', '\u0327',
+                '\u0328', '\u0329', '\u032A', '\u032B', '\u032C', '\u032D', '\u032E', '\u032F',
+                '\u0330', '\u0331', '\u0332', '\u0333', '\u0339', '\u033A', '\u033B', '\u033C',
+                '\u0345', '\u0347', '\u0348', '\u0349', '\u034D', '\u034E', '\u0353', '\u0354',
+                '\u0355', '\u0356', '\u0359', '\u035A', '\u0323'
+            ];
+
+            // Combining marks middle (through the middle)
+            const combiningMiddle = [
+                '\u0334', '\u0335', '\u0336', '\u0337', '\u0338', '\u0489', '\u0488',
+                '\u20D0', '\u20D1', '\u20D2', '\u20D3', '\u20D4', '\u20D5', '\u20D6',
+                '\u20D7', '\u20D8', '\u20D9', '\u20DA', '\u20DB', '\u20DC', '\u20DD',
+                '\u20DE', '\u20DF', '\u20E0', '\u20E1', '\u20E2', '\u20E3', '\u20E4',
+                '\u20E5', '\u20E6', '\u20E7', '\u20E8', '\u20E9', '\u20EA', '\u20EB',
+                '\u20EC', '\u20ED', '\u20EE', '\u20EF'
             ];
 
             let result = char;
             const intensity = options.intensity || 3;
-            const numMarks = Math.floor(Math.random() * intensity) + 1;
-            for (let i = 0; i < numMarks; i++) {
-                result += combining[Math.floor(Math.random() * combining.length)];
+
+            // Add marks from all three categories
+            const numAbove = Math.floor(Math.random() * intensity) + 1;
+            const numBelow = Math.floor(Math.random() * intensity) + 1;
+            const numMiddle = Math.floor(Math.random() * (intensity / 2)) + 1;
+
+            // Add above marks
+            for (let i = 0; i < numAbove; i++) {
+                result += combiningAbove[Math.floor(Math.random() * combiningAbove.length)];
             }
+
+            // Add below marks
+            for (let i = 0; i < numBelow; i++) {
+                result += combiningBelow[Math.floor(Math.random() * combiningBelow.length)];
+            }
+
+            // Add middle marks
+            for (let i = 0; i < numMiddle; i++) {
+                result += combiningMiddle[Math.floor(Math.random() * combiningMiddle.length)];
+            }
+
             return result;
         }
     }
