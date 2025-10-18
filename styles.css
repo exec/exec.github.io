@@ -412,6 +412,14 @@ header h1 {
     align-items: center;
 }
 
+.result-text.code {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.9rem;
+    white-space: pre-wrap;
+    display: block;
+    overflow-x: auto;
+}
+
 .result-text:empty::before {
     content: '\00a0';
 }

@@ -1392,21 +1392,21 @@ function decodeJWT() {
         // Decode header
         const headerJson = atob(parts[0].replace(/-/g, '+').replace(/_/g, '/'));
         const header = JSON.parse(headerJson);
-        const headerCard = createSimpleCard('Header', JSON.stringify(header, null, 2));
+        const headerCard = createSimpleCard('Header', JSON.stringify(header, null, 2), true);
         resultsContainer.appendChild(headerCard);
 
         // Decode payload
         const payloadJson = atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'));
         const payload = JSON.parse(payloadJson);
-        const payloadCard = createSimpleCard('Payload', JSON.stringify(payload, null, 2));
+        const payloadCard = createSimpleCard('Payload', JSON.stringify(payload, null, 2), true);
         resultsContainer.appendChild(payloadCard);
 
         // Signature note
-        const signatureCard = createSimpleCard('Signature', `${parts[2]}\n\n⚠️ Signature verification not performed (client-side only)`);
+        const signatureCard = createSimpleCard('Signature', `${parts[2]}\n\n⚠️ Signature verification not performed (client-side only)`, true);
         resultsContainer.appendChild(signatureCard);
 
     } catch (error) {
-        const errorCard = createSimpleCard('Error', `Failed to decode JWT: ${error.message}`);
+        const errorCard = createSimpleCard('Error', `Failed to decode JWT: ${error.message}`, true);
         resultsContainer.appendChild(errorCard);
     }
 }
@@ -1437,12 +1437,12 @@ function formatJSON() {
 
         // Formatted (pretty)
         const formatted = JSON.stringify(parsed, null, 2);
-        const formattedCard = createSimpleCard('Formatted (Pretty)', formatted);
+        const formattedCard = createSimpleCard('Formatted (Pretty)', formatted, true);
         resultsContainer.appendChild(formattedCard);
 
         // Minified
         const minified = JSON.stringify(parsed);
-        const minifiedCard = createSimpleCard('Minified', minified);
+        const minifiedCard = createSimpleCard('Minified', minified, true);
         resultsContainer.appendChild(minifiedCard);
 
         // Validation success
@@ -1450,7 +1450,7 @@ function formatJSON() {
         resultsContainer.appendChild(validCard);
 
     } catch (error) {
-        const errorCard = createSimpleCard('Error', `❌ Invalid JSON\n\n${error.message}`);
+        const errorCard = createSimpleCard('Error', `❌ Invalid JSON\n\n${error.message}`, true);
         resultsContainer.appendChild(errorCard);
     }
 }
@@ -1486,7 +1486,7 @@ function generateUUIDs() {
     }
 
     const uuidText = uuids.join('\n');
-    const card = createSimpleCard(`${count} UUIDs`, uuidText);
+    const card = createSimpleCard(`${count} UUIDs`, uuidText, true);
     resultsContainer.appendChild(card);
 }
 
@@ -1595,7 +1595,7 @@ function dateToTimestamp() {
  * =================
  */
 
-function createSimpleCard(title, content) {
+function createSimpleCard(title, content, isCode = false) {
     const card = document.createElement('div');
     card.className = 'result-card';
 
@@ -1616,7 +1616,7 @@ function createSimpleCard(title, content) {
     header.appendChild(copyBtn);
 
     const textDiv = document.createElement('div');
-    textDiv.className = 'result-text';
+    textDiv.className = isCode ? 'result-text code' : 'result-text';
     textDiv.textContent = content;
 
     card.appendChild(header);
