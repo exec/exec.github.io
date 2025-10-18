@@ -1164,13 +1164,6 @@ const encodingFunctions = {
         }
     },
     'Reverse Text': (text) => text.split('').reverse().join(''),
-    'Word Count': (text) => {
-        const words = text.trim().split(/\s+/).filter(w => w.length > 0);
-        const chars = text.length;
-        const charsNoSpaces = text.replace(/\s/g, '').length;
-        const lines = text.split('\n').length;
-        return `Words: ${words.length} | Characters: ${chars} | Chars (no spaces): ${charsNoSpaces} | Lines: ${lines}`;
-    },
     'Uppercase': (text) => text.toUpperCase(),
     'Lowercase': (text) => text.toLowerCase(),
     'Title Case': (text) => {
@@ -1206,7 +1199,6 @@ function getEncodingFilename(operationName, originalFilename) {
         'Binary Encode': '.bin',
         'Binary Decode': '.txt',
         'Reverse Text': '.reversed.txt',
-        'Word Count': '.wordcount.txt',
         'Uppercase': '.upper.txt',
         'Lowercase': '.lower.txt',
         'Title Case': '.title.txt',
@@ -1228,9 +1220,33 @@ function getEncodingFilename(operationName, originalFilename) {
     return baseFilename + extension;
 }
 
+function updateEncodingStats(text) {
+    const statsContainer = document.getElementById('encodingStats');
+
+    if (!text) {
+        statsContainer.innerHTML = '';
+        return;
+    }
+
+    const words = text.trim().split(/\s+/).filter(w => w.length > 0);
+    const chars = text.length;
+    const charsNoSpaces = text.replace(/\s/g, '').length;
+    const lines = text.split('\n').length;
+
+    statsContainer.innerHTML = `
+        <span class="stat-item"><span class="stat-label">Words:</span> <span class="stat-value">${words.length}</span></span>
+        <span class="stat-item"><span class="stat-label">Characters:</span> <span class="stat-value">${chars}</span></span>
+        <span class="stat-item"><span class="stat-label">Characters (no spaces):</span> <span class="stat-value">${charsNoSpaces}</span></span>
+        <span class="stat-item"><span class="stat-label">Lines:</span> <span class="stat-value">${lines}</span></span>
+    `;
+}
+
 function updateEncodings() {
     const inputText = document.getElementById('encodingInput').value;
     const resultsContainer = document.getElementById('encodingResults');
+
+    // Update stats
+    updateEncodingStats(inputText);
 
     // Clear existing results
     resultsContainer.innerHTML = '';
@@ -1277,11 +1293,13 @@ function clearEncodingInput() {
     const fileInput = document.getElementById('encodingFileInput');
     const fileNameSpan = document.getElementById('encodingFileName');
     const resultsContainer = document.getElementById('encodingResults');
+    const statsContainer = document.getElementById('encodingStats');
 
     encodingInput.value = '';
     fileInput.value = '';
     fileNameSpan.textContent = '';
     resultsContainer.innerHTML = '';
+    statsContainer.innerHTML = '';
     importedEncodingFilename = null; // Clear stored filename
 }
 

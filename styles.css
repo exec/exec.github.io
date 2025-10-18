@@ -339,6 +339,39 @@ header h1 {
     min-width: 200px;
 }
 
+/* Text Stats Display */
+.text-stats {
+    margin-top: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: var(--background);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    border: 1px solid var(--border-color);
+}
+
+.text-stats:empty {
+    display: none;
+}
+
+.stat-item {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.stat-label {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.stat-value {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
 /* Results Section */
 .results-section {
     display: grid;
