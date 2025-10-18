@@ -954,7 +954,9 @@ function closeAllDropdowns() {
 
 function initTabSwitching() {
     // Handle regular tab buttons
-    document.querySelectorAll('.tab-button:not(.dropdown-toggle)').forEach(button => {
+    const regularButtons = document.querySelectorAll('.tab-button:not(.dropdown-toggle)');
+    console.log(`Found ${regularButtons.length} regular tab buttons`);
+    regularButtons.forEach(button => {
         button.addEventListener('click', (e) => {
             const tabName = e.target.getAttribute('data-tab');
             if (tabName) {
@@ -964,11 +966,14 @@ function initTabSwitching() {
     });
 
     // Handle dropdown toggles
-    document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
+    const dropdownToggles = document.querySelectorAll('.dropdown-toggle');
+    console.log(`Found ${dropdownToggles.length} dropdown toggles`);
+    dropdownToggles.forEach(toggle => {
         toggle.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
             const dropdownId = toggle.getAttribute('data-dropdown');
+            console.log(`Dropdown toggle clicked: ${dropdownId}`);
             if (dropdownId) {
                 toggleDropdown(dropdownId);
             } else {
@@ -978,7 +983,9 @@ function initTabSwitching() {
     });
 
     // Handle dropdown items
-    document.querySelectorAll('.dropdown-item').forEach(item => {
+    const dropdownItems = document.querySelectorAll('.dropdown-item');
+    console.log(`Found ${dropdownItems.length} dropdown items`);
+    dropdownItems.forEach(item => {
         item.addEventListener('click', (e) => {
             const tabName = e.target.getAttribute('data-tab');
             switchTab(tabName);
