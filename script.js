@@ -923,19 +923,26 @@ function switchTab(tabName) {
 
 function toggleDropdown(dropdownId) {
     const dropdown = document.getElementById(`${dropdownId}-dropdown`);
+
+    if (!dropdown) {
+        console.error(`Dropdown not found: ${dropdownId}-dropdown`);
+        return;
+    }
+
     const parentContainer = dropdown.closest('.tab-dropdown');
 
     // Close all other dropdowns
     document.querySelectorAll('.dropdown-menu').forEach(menu => {
         if (menu !== dropdown) {
             menu.classList.remove('show');
-            menu.closest('.tab-dropdown').classList.remove('active');
+            const parent = menu.closest('.tab-dropdown');
+            if (parent) parent.classList.remove('active');
         }
     });
 
     // Toggle current dropdown
     dropdown.classList.toggle('show');
-    parentContainer.classList.toggle('active');
+    if (parentContainer) parentContainer.classList.toggle('active');
 }
 
 function closeAllDropdowns() {
@@ -959,9 +966,14 @@ function initTabSwitching() {
     // Handle dropdown toggles
     document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
         toggle.addEventListener('click', (e) => {
+            e.preventDefault();
             e.stopPropagation();
             const dropdownId = toggle.getAttribute('data-dropdown');
-            toggleDropdown(dropdownId);
+            if (dropdownId) {
+                toggleDropdown(dropdownId);
+            } else {
+                console.error('No data-dropdown attribute found on toggle');
+            }
         });
     });
 
