@@ -21,6 +21,11 @@
     vertical-align: middle;
     font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', sans-serif;
     line-height: 1;
+    text-shadow: none !important;
+    -webkit-text-fill-color: initial !important;
+    background: none !important;
+    -webkit-background-clip: initial !important;
+    background-clip: initial !important;
 }
 
 @keyframes pumpkinBob {
