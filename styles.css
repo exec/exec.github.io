@@ -64,12 +64,10 @@ header h1 {
 /* Tab Navigation */
 .tab-nav {
     display: flex;
+    flex-wrap: wrap;
     gap: 0.5rem;
     margin-bottom: 2rem;
     border-bottom: 2px solid var(--border-color);
-    overflow-x: auto;
-    overflow-y: visible;
-    -webkit-overflow-scrolling: touch;
 }
 
 .tab-button {
