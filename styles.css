@@ -68,6 +68,7 @@ header h1 {
     margin-bottom: 2rem;
     border-bottom: 2px solid var(--border-color);
     overflow-x: auto;
+    overflow-y: visible;
     -webkit-overflow-scrolling: touch;
 }
 
@@ -119,15 +120,15 @@ header h1 {
 .dropdown-menu {
     display: none;
     position: absolute;
-    top: 100%;
+    top: calc(100% + 2px);
     left: 0;
     min-width: 200px;
     background: var(--card-background);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-sm);
     box-shadow: var(--shadow-lg);
-    margin-top: 0.25rem;
-    z-index: 100;
+    margin-top: 0.5rem;
+    z-index: 1000;
     animation: dropdownFadeIn 0.2s ease;
 }
 
