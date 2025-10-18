@@ -891,8 +891,8 @@ function switchTab(tabName) {
         item.classList.remove('active');
     });
 
-    // Remove active class from non-dropdown tab buttons
-    document.querySelectorAll('.tab-button:not(.dropdown-toggle)').forEach(button => {
+    // Remove active class from ALL tab buttons (including dropdown toggles)
+    document.querySelectorAll('.tab-button').forEach(button => {
         button.classList.remove('active');
     });
 
