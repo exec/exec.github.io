@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevTools - Client-Side Utilities</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="home.css">
+    <link rel="stylesheet" href="halloween.css">
+</head>
+<body>
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">Dylan Hart</a>
+            <div class="nav-links">
+                <a href="/" class="nav-link">Home</a>
+                <a href="/tools.html" class="nav-link active">DevTools</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header>
+            <h1>DevTools <span class="halloween-pumpkin">🎃</span></h1>
+            <p class="subtitle">Client-side utilities for developers</p>
+        </header>
+
+        <!-- Tab Navigation -->
+        <nav class="tab-nav">
+            <button class="tab-button active" data-tab="unicode">Unicode</button>
+
+            <div class="tab-dropdown">
+                <button class="tab-button dropdown-toggle" data-dropdown="text">
+                    Text <span class="dropdown-arrow">▾</span>
+                </button>
+                <div class="dropdown-menu" id="text-dropdown">
+                    <button class="dropdown-item" data-tab="encoding">Encoding & Manipulation</button>
+                    <button class="dropdown-item" data-tab="lorem">Lorem Ipsum</button>
+                </div>
+            </div>
+
+            <div class="tab-dropdown">
+                <button class="tab-button dropdown-toggle" data-dropdown="crypto">
+                    Crypto <span class="dropdown-arrow">▾</span>
+                </button>
+                <div class="dropdown-menu" id="crypto-dropdown">
+                    <button class="dropdown-item" data-tab="hash">Hash Generator</button>
+                    <button class="dropdown-item" data-tab="jwt">JWT Decoder</button>
+                </div>
+            </div>
+
+            <div class="tab-dropdown">
+                <button class="tab-button dropdown-toggle" data-dropdown="data">
+                    Data <span class="dropdown-arrow">▾</span>
+                </button>
+                <div class="dropdown-menu" id="data-dropdown">
+                    <button class="dropdown-item" data-tab="json">JSON Formatter</button>
+                    <button class="dropdown-item" data-tab="uuid">UUID Generator</button>
+                    <button class="dropdown-item" data-tab="timestamp">Timestamp Converter</button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Unicode Converter Tab -->
+        <div class="tab-content active" id="unicode-tab">
+            <div class="tool-description">
+                <p>Transform your text into various Unicode styles instantly</p>
+            </div>
+
+            <div class="input-section">
+                <textarea
+                    id="inputText"
+                    placeholder="Type something here..."
+                    rows="3"
+                    autofocus
+                >test</textarea>
+            </div>
+
+            <div class="results-section" id="results">
+                <!-- Results will be dynamically generated here -->
+            </div>
+        </div>
+
+        <!-- Hash Generator Tab -->
+        <div class="tab-content" id="hash-tab">
+            <div class="tool-description">
+                <p>Generate cryptographic hashes from your input text or file</p>
+            </div>
+
+            <div class="input-section">
+                <div class="textarea-container">
+                    <textarea
+                        id="hashInput"
+                        placeholder="Enter text to hash..."
+                        rows="3"
+                    ></textarea>
+                    <button class="clear-textarea-btn" id="hashClearBtn" title="Clear">×</button>
+                </div>
+                <div style="margin-top: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="file" id="hashFileInput" style="display: none;" />
+                    <button class="copy-btn" onclick="document.getElementById('hashFileInput').click()">Import file</button>
+                    <span id="hashFileName" style="color: var(--text-secondary); font-size: 0.9rem;"></span>
+                </div>
+            </div>
+
+            <div class="results-section" id="hashResults">
+                <!-- Hash results will be dynamically generated here -->
+            </div>
+        </div>
+
+        <!-- Encoding & Text Tab -->
+        <div class="tab-content" id="encoding-tab">
+            <div class="tool-description">
+                <p>Encode, decode, and manipulate text or files</p>
+            </div>
+
+            <div class="input-section">
+                <div class="textarea-container">
+                    <textarea
+                        id="encodingInput"
+                        placeholder="Enter text to encode/decode..."
+                        rows="3"
+                    ></textarea>
+                    <button class="clear-textarea-btn" id="encodingClearBtn" title="Clear">×</button>
+                </div>
+                <div style="margin-top: 1rem; display: flex; gap: 0.5rem; align-items: center;">
+                    <input type="file" id="encodingFileInput" style="display: none;" />
+                    <button class="copy-btn" onclick="document.getElementById('encodingFileInput').click()">Import file</button>
+                    <span id="encodingFileName" style="color: var(--text-secondary); font-size: 0.9rem;"></span>
+                </div>
+                <div id="encodingStats" class="text-stats"></div>
+            </div>
+
+            <div class="results-section" id="encodingResults">
+                <!-- Encoding results will be dynamically generated here -->
+            </div>
+        </div>
+
+        <!-- Lorem Ipsum Generator Tab -->
+        <div class="tab-content" id="lorem-tab">
+            <div class="tool-description">
+                <p>Generate placeholder text for your designs and mockups</p>
+            </div>
+
+            <div class="input-section">
+                <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                    <label>
+                        Type:
+                        <select id="loremType" class="lorem-select">
+                            <option value="paragraphs">Paragraphs</option>
+                            <option value="sentences">Sentences</option>
+                            <option value="words">Words</option>
+                        </select>
+                    </label>
+                    <label>
+                        Count:
+                        <input type="number" id="loremCount" min="1" max="100" value="5" class="lorem-input" />
+                    </label>
+                    <button class="copy-btn" id="generateLoremBtn">Generate</button>
+                </div>
+            </div>
+
+            <div class="results-section" id="loremResults">
+                <!-- Lorem ipsum results will be dynamically generated here -->
+            </div>
+        </div>
+
+        <!-- JWT Decoder Tab -->
+        <div class="tab-content" id="jwt-tab">
+            <div class="tool-description">
+                <p>Decode and inspect JWT tokens (header and payload only, no signature validation)</p>
+            </div>
+
+            <div class="input-section">
+                <div class="textarea-container">
+                    <textarea
+                        id="jwtInput"
+                        placeholder="Paste your JWT token here..."
+                        rows="3"
+                    ></textarea>
+                    <button class="clear-textarea-btn" id="jwtClearBtn" title="Clear">×</button>
+                </div>
+            </div>
+
+            <div class="results-section" id="jwtResults">
+                <!-- JWT results will be dynamically generated here -->
+            </div>
+        </div>
+
+        <!-- JSON Formatter Tab -->
+        <div class="tab-content" id="json-tab">
+            <div class="tool-description">
+                <p>Format, validate, and minify JSON data</p>
+            </div>
+
+            <div class="input-section">
+                <div class="textarea-container">
+                    <textarea
+                        id="jsonInput"
+                        placeholder="Paste your JSON here..."
+                        rows="6"
+                    ></textarea>
+                    <button class="clear-textarea-btn" id="jsonClearBtn" title="Clear">×</button>
+                </div>
+            </div>
+
+            <div class="results-section" id="jsonResults">
+                <!-- JSON results will be dynamically generated here -->
+            </div>
+        </div>
+
+        <!-- UUID Generator Tab -->
+        <div class="tab-content" id="uuid-tab">
+            <div class="tool-description">
+                <p>Generate UUID v4 (random) identifiers</p>
+            </div>
+
+            <div class="input-section">
+                <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                    <label>
+                        Count:
+                        <input type="number" id="uuidCount" min="1" max="100" value="10" class="lorem-input" />
+                    </label>
+                    <button class="copy-btn" id="generateUuidBtn">Generate UUIDs</button>
+                </div>
+            </div>
+
+            <div class="results-section" id="uuidResults">
+                <!-- UUID results will be dynamically generated here -->
+            </div>
+        </div>
+
+        <!-- Timestamp Converter Tab -->
+        <div class="tab-content" id="timestamp-tab">
+            <div class="tool-description">
+                <p>Convert between Unix timestamps and human-readable dates</p>
+            </div>
+
+            <div class="input-section">
+                <div style="display: flex; gap: 1rem; flex-direction: column;">
+                    <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                        <input type="text" id="timestampInput" placeholder="Enter Unix timestamp (seconds or milliseconds)" class="timestamp-input" />
+                        <button class="copy-btn" id="convertTimestampBtn">Convert</button>
+                        <button class="copy-btn" id="currentTimestampBtn">Current Time</button>
+                    </div>
+                    <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                        <input type="datetime-local" id="dateInput" class="timestamp-input" />
+                        <button class="copy-btn" id="dateToTimestampBtn">Convert to Timestamp</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-section" id="timestampResults">
+                <!-- Timestamp results will be dynamically generated here -->
+            </div>
+        </div>
+
+        <footer>
+            <p>Made with ❤️ and JavaScript by Claude</p>
+        </footer>
+    </div>
+
+    <!-- Toast notification for copy feedback -->
+    <div class="toast" id="toast">Copied!</div>
+
+    <script src="script.js"></script>
+    <script src="halloween.js"></script>
+</body>
+</html>
