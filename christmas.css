@@ -1,0 +1,188 @@
+/**
+ * 🎄 CHRISTMAS THEME 2024 🎄
+ * Temporary festive theme - remove after Christmas!
+ */
+
+/* Christmas color overrides */
+:root {
+    --christmas-red: #dc2626;
+    --christmas-green: #16a34a;
+    --christmas-gold: #fbbf24;
+    --christmas-silver: #e5e7eb;
+    --christmas-blue: #3b82f6;
+    --christmas-white: #f8fafc;
+}
+
+/* Christmas tree animation */
+.christmas-tree {
+    display: inline-block;
+    animation: treeSway 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 10px #16a34a);
+    font-size: 2rem;
+    vertical-align: middle;
+    font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', sans-serif;
+    line-height: 1;
+    text-shadow: none !important;
+    -webkit-text-fill-color: initial !important;
+    background: none !important;
+    -webkit-background-clip: initial !important;
+    background-clip: initial !important;
+}
+
+@keyframes treeSway {
+    0%, 100% { transform: translateY(0px) rotate(-1deg); }
+    50% { transform: translateY(-8px) rotate(1deg); }
+}
+
+/* Festive glow on header */
+header h1 {
+    text-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+}
+
+/* Result cards get particle effects */
+.result-card {
+    position: relative;
+    overflow: hidden;
+    contain: layout style paint; /* CSS containment for better performance */
+}
+
+/* Fade in/out animation for result text - removed to improve performance */
+.result-text {
+    /* No animation for better performance */
+}
+
+/* Particle container */
+.christmas-particles {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 1;
+    contain: strict; /* Strict containment for maximum performance */
+}
+
+/* Individual particle */
+.particle {
+    position: absolute;
+    bottom: -20px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: particleRise 4s ease-out forwards;
+    will-change: transform, opacity; /* GPU acceleration hint */
+}
+
+/* Snow effect */
+.particle.snow {
+    background: radial-gradient(circle, #ffffff, #e0f2fe);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
+
+/* Sparkle/gold effect */
+.particle.sparkle {
+    background: radial-gradient(circle, #fbbf24, #f59e0b);
+    box-shadow: 0 0 10px #fbbf24;
+}
+
+/* Aurora/northern lights effect */
+.particle.aurora {
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.8), rgba(139, 92, 246, 0.5));
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.6);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+}
+
+/* Star effect */
+.particle.star {
+    background: radial-gradient(circle, #fef3c7, #fbbf24);
+    box-shadow: 0 0 12px #fbbf24;
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+    border-radius: 0;
+}
+
+/* Twinkle lights effect */
+.particle.twinkle {
+    background: linear-gradient(135deg, #dc2626, #16a34a);
+    border-radius: 50%;
+    width: 8px;
+    height: 8px;
+    box-shadow: 0 0 8px rgba(220, 38, 38, 0.8);
+}
+
+@keyframes particleRise {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 0.9;
+    }
+    50% {
+        transform: translate(var(--drift, 0), -200px) scale(1.1);
+        opacity: 0.7;
+    }
+    100% {
+        transform: translate(var(--drift, 0), -400px) scale(0.3);
+        opacity: 0;
+    }
+}
+
+/* Festive cursor */
+body {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="%2316a34a"><text y="20" font-size="20">🎄</text></svg>') 12 12, auto;
+}
+
+/* Christmas tab buttons */
+.tab-button:hover {
+    box-shadow:
+        0 0 10px rgba(22, 163, 74, 0.4),
+        0 0 20px rgba(251, 191, 36, 0.2),
+        inset 0 0 10px rgba(22, 163, 74, 0.1);
+}
+
+.tab-button.active {
+    box-shadow:
+        0 0 15px rgba(22, 163, 74, 0.6),
+        0 0 30px rgba(251, 191, 36, 0.3),
+        inset 0 0 15px rgba(22, 163, 74, 0.15);
+    background: rgba(22, 163, 74, 0.1);
+}
+
+/* Copy buttons get festive on hover */
+.copy-btn:hover {
+    box-shadow: 0 0 15px var(--christmas-gold);
+}
+
+/* Toast notification */
+.toast.show {
+    background: linear-gradient(135deg, var(--christmas-red), var(--christmas-green));
+    box-shadow: 0 0 30px var(--christmas-gold);
+}
+
+/* Falling snowflakes in background */
+@keyframes snowfall {
+    0% {
+        transform: translate(0, 0) rotate(0deg);
+        opacity: 0;
+    }
+    5% {
+        opacity: 0.9;
+    }
+    95% {
+        opacity: 0.9;
+    }
+    100% {
+        transform: translate(var(--snow-drift, 5vw), 120vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+.falling-snowflake {
+    position: fixed;
+    font-size: 2rem;
+    pointer-events: none;
+    z-index: 1;
+    animation: snowfall 15s linear forwards;
+    will-change: transform, opacity; /* GPU acceleration */
+    contain: strict; /* Performance containment */
+}
