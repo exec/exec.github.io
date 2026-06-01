@@ -1,8 +1,11 @@
 import { useRef } from 'react'
 import { Icon } from './Icon'
+import { GradientEditor } from './GradientEditor'
 import {
-  PRESETS,
+  THEMES,
+  stop,
   type StyleState,
+  type Theme,
   type DotType,
   type CornerSquareType,
   type CornerDotType,
@@ -102,19 +105,32 @@ const ERROR_OPTS: { value: ErrorLevel; label: string }[] = [
   { value: 'H', label: 'H · 30%' },
 ]
 
-function presetSwatch(p: (typeof PRESETS)[number]) {
-  const s = p.patch
+function themeSwatch(t: Theme) {
+  const s = t.patch
   const fg =
-    s.fgType === 'gradient'
-      ? `linear-gradient(135deg, ${s.fgColor}, ${s.fgColor2})`
+    s.fgType === 'gradient' && s.fgStops?.length
+      ? `linear-gradient(135deg, ${s.fgStops.map((g) => g.color).join(', ')})`
       : (s.fgColor ?? '#000')
   return (
     <div
-      className="flex h-9 w-9 items-center justify-center rounded-lg ring-1 ring-white/15"
+      className="flex h-10 w-10 items-center justify-center rounded-lg ring-1 ring-white/15"
       style={{ background: s.bgColor ?? '#fff' }}
     >
       <div className="h-5 w-5 rounded-[5px]" style={{ background: fg }} />
     </div>
+  )
+}
+
+function ThemeButton({ t, onClick }: { t: Theme; onClick: () => void }) {
+  return (
+    <button type="button" title={t.name} onClick={onClick} className="group flex flex-col items-center gap-1.5">
+      <span className="rounded-xl p-0.5 ring-1 ring-transparent transition group-hover:ring-brand-400/50">
+        {themeSwatch(t)}
+      </span>
+      <span className="max-w-[4.5rem] truncate text-[10px] text-white/40 group-hover:text-white/70">
+        {t.name}
+      </span>
+    </button>
   )
 }
 
@@ -130,28 +146,24 @@ export function StylePanel({ style, setStyle, applyPreset }: Props) {
 
   return (
     <div className="space-y-7">
-      {/* Presets */}
+      {/* Themes */}
       <section>
-        <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-white/85">
+        <h3 className="mb-1 flex items-center gap-2 text-sm font-semibold text-white/85">
           <Icon name="Sparkles" size={15} className="text-brand-400" />
-          Presets
+          Themes
         </h3>
-        <div className="grid grid-cols-4 gap-2 sm:grid-cols-8 lg:grid-cols-4 xl:grid-cols-8">
-          {PRESETS.map((p) => (
-            <button
-              key={p.id}
-              type="button"
-              title={p.name}
-              onClick={() => applyPreset(p.patch)}
-              className="group flex flex-col items-center gap-1.5"
-            >
-              <span className="rounded-xl p-0.5 ring-1 ring-transparent transition group-hover:ring-brand-400/50">
-                {presetSwatch(p)}
-              </span>
-              <span className="truncate text-[10px] text-white/40 group-hover:text-white/70">
-                {p.name}
-              </span>
-            </button>
+
+        <p className="label mt-3">Classic · scanner-safe</p>
+        <div className="grid grid-cols-4 gap-2 sm:grid-cols-6 lg:grid-cols-4 xl:grid-cols-6">
+          {THEMES.filter((t) => t.kind === 'classic').map((t) => (
+            <ThemeButton key={t.id} t={t} onClick={() => applyPreset(t.patch)} />
+          ))}
+        </div>
+
+        <p className="label mt-4">Creative · gradient</p>
+        <div className="grid grid-cols-4 gap-2 sm:grid-cols-6 lg:grid-cols-4 xl:grid-cols-6">
+          {THEMES.filter((t) => t.kind === 'gradient').map((t) => (
+            <ThemeButton key={t.id} t={t} onClick={() => applyPreset(t.patch)} />
           ))}
         </div>
       </section>
@@ -172,42 +184,24 @@ export function StylePanel({ style, setStyle, applyPreset }: Props) {
                 { value: 'gradient', label: 'Gradient' },
               ]}
               value={style.fgType}
-              onChange={(v) => setStyle({ fgType: v })}
+              onChange={(v) =>
+                setStyle(
+                  v === 'gradient' && style.fgStops.length < 2
+                    ? { fgType: v, fgStops: [stop(0, style.fgColor), stop(1, '#22d3ee')] }
+                    : { fgType: v },
+                )
+              }
             />
           </div>
-          <div className="grid grid-cols-2 gap-2">
+          {style.fgType === 'gradient' ? (
+            <GradientEditor
+              stops={style.fgStops}
+              gradientType={style.gradientType}
+              rotation={style.gradientRotation}
+              onChange={setStyle}
+            />
+          ) : (
             <ColorInput value={style.fgColor} onChange={(v) => setStyle({ fgColor: v })} />
-            {style.fgType === 'gradient' && (
-              <ColorInput value={style.fgColor2} onChange={(v) => setStyle({ fgColor2: v })} />
-            )}
-          </div>
-          {style.fgType === 'gradient' && (
-            <div className="mt-3 flex items-center gap-4">
-              <Segmented
-                options={[
-                  { value: 'linear', label: 'Linear' },
-                  { value: 'radial', label: 'Radial' },
-                ]}
-                value={style.gradientType}
-                onChange={(v) => setStyle({ gradientType: v })}
-              />
-              {style.gradientType === 'linear' && (
-                <div className="flex flex-1 items-center gap-2">
-                  <span className="text-xs text-white/40">Angle</span>
-                  <input
-                    type="range"
-                    min={0}
-                    max={360}
-                    value={style.gradientRotation}
-                    onChange={(e) => setStyle({ gradientRotation: Number(e.target.value) })}
-                    className="accent-brand-500 flex-1"
-                  />
-                  <span className="w-9 text-right text-xs text-white/55">
-                    {style.gradientRotation}°
-                  </span>
-                </div>
-              )}
-            </div>
           )}
         </div>
 

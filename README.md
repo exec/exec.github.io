@@ -17,10 +17,13 @@ redirect dies and your printed code is worthless unless you pay. Permaqr only ma
 
 - **12 code types** — Website/Link, Plain text, Email, Phone, SMS, Wi-Fi, Contact
   (vCard), WhatsApp, Location, Calendar event, Crypto payment, PayPal.
+- **Themes** — one-click looks split into *Classic* (traditional, scanner-safe
+  black & white, soft mono, inverted, navy) and *Creative* gradient styles.
+- **Multi-stop gradient editor** — drag stops along a gradient bar, click to add a
+  stop, set each color/position, choose linear or radial and the angle.
 - **Full styling** — solid or gradient foreground, custom background (or
   transparent), six dot styles, corner frame/dot shapes, logo upload, adjustable
   quiet zone and error-correction level.
-- **8 one-click presets** for instant good-looking codes.
 - **Export** to PNG, SVG, JPG or WEBP at print resolution (1024px).
 - **100% client-side** — no network calls, no tracking, your data never leaves the
   device.
