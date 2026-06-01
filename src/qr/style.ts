@@ -8,8 +8,9 @@ export type DotType =
   | 'classy'
   | 'classy-rounded'
 
-export type CornerSquareType = 'square' | 'rounded' | 'extra-rounded' | 'dot'
-export type CornerDotType = 'square' | 'rounded' | 'dot'
+// In qr-code-styling 1.9, corners accept the full DotType set plus `dot`.
+export type CornerSquareType = DotType | 'dot'
+export type CornerDotType = DotType | 'dot'
 export type ErrorLevel = 'L' | 'M' | 'Q' | 'H'
 
 /** A single color stop in the foreground gradient. */
@@ -79,16 +80,20 @@ export const DEFAULT_STYLE: StyleState = {
   hideBackgroundDots: true,
 }
 
+/**
+ * Color themes — these only change COLOR (foreground / gradient / background),
+ * never the shapes. Shapes are controlled independently in the Shape panel so
+ * you can mix any look with any color.
+ */
 export interface Theme {
   id: string
   name: string
-  /** Quick category so we can group "traditional" vs "creative". */
   kind: 'classic' | 'gradient'
   patch: Partial<StyleState>
 }
 
 export const THEMES: Theme[] = [
-  // --- Traditional, scanner-safe black & white first ---
+  // --- Traditional, scanner-safe solid colors ---
   {
     id: 'bw',
     name: 'Black & White',
@@ -98,24 +103,18 @@ export const THEMES: Theme[] = [
       fgColor: '#000000',
       bgColor: '#ffffff',
       bgTransparent: false,
-      dotStyle: 'square',
-      cornerSquareStyle: 'square',
-      cornerDotStyle: 'square',
       cornerColorOverride: false,
     },
   },
   {
-    id: 'bw-rounded',
-    name: 'Soft Mono',
+    id: 'ink',
+    name: 'Ink',
     kind: 'classic',
     patch: {
       fgType: 'solid',
       fgColor: '#0b0b14',
       bgColor: '#ffffff',
       bgTransparent: false,
-      dotStyle: 'rounded',
-      cornerSquareStyle: 'extra-rounded',
-      cornerDotStyle: 'dot',
       cornerColorOverride: false,
     },
   },
@@ -128,9 +127,6 @@ export const THEMES: Theme[] = [
       fgColor: '#ffffff',
       bgColor: '#0b0b14',
       bgTransparent: false,
-      dotStyle: 'rounded',
-      cornerSquareStyle: 'rounded',
-      cornerDotStyle: 'dot',
       cornerColorOverride: false,
     },
   },
@@ -143,9 +139,18 @@ export const THEMES: Theme[] = [
       fgColor: '#1e293b',
       bgColor: '#ffffff',
       bgTransparent: false,
-      dotStyle: 'square',
-      cornerSquareStyle: 'square',
-      cornerDotStyle: 'square',
+      cornerColorOverride: false,
+    },
+  },
+  {
+    id: 'crimson',
+    name: 'Crimson',
+    kind: 'classic',
+    patch: {
+      fgType: 'solid',
+      fgColor: '#b91c1c',
+      bgColor: '#ffffff',
+      bgTransparent: false,
       cornerColorOverride: false,
     },
   },
@@ -161,9 +166,6 @@ export const THEMES: Theme[] = [
       gradientRotation: 45,
       bgColor: '#ffffff',
       bgTransparent: false,
-      dotStyle: 'extra-rounded',
-      cornerSquareStyle: 'extra-rounded',
-      cornerDotStyle: 'dot',
       cornerColorOverride: false,
     },
   },
@@ -178,9 +180,6 @@ export const THEMES: Theme[] = [
       gradientRotation: 30,
       bgColor: '#ffffff',
       bgTransparent: false,
-      dotStyle: 'dots',
-      cornerSquareStyle: 'extra-rounded',
-      cornerDotStyle: 'dot',
       cornerColorOverride: false,
     },
   },
@@ -195,9 +194,6 @@ export const THEMES: Theme[] = [
       gradientRotation: 90,
       bgColor: '#ffffff',
       bgTransparent: false,
-      dotStyle: 'classy-rounded',
-      cornerSquareStyle: 'rounded',
-      cornerDotStyle: 'dot',
       cornerColorOverride: false,
     },
   },
@@ -212,9 +208,6 @@ export const THEMES: Theme[] = [
       gradientRotation: 0,
       bgColor: '#0b0b14',
       bgTransparent: false,
-      dotStyle: 'dots',
-      cornerSquareStyle: 'dot',
-      cornerDotStyle: 'dot',
       cornerColorOverride: true,
       cornerColor: '#22d3ee',
     },
@@ -230,9 +223,6 @@ export const THEMES: Theme[] = [
       gradientRotation: 135,
       bgColor: '#ffffff',
       bgTransparent: false,
-      dotStyle: 'classy',
-      cornerSquareStyle: 'extra-rounded',
-      cornerDotStyle: 'square',
       cornerColorOverride: false,
     },
   },
@@ -247,13 +237,39 @@ export const THEMES: Theme[] = [
       gradientRotation: 60,
       bgColor: '#fff1f2',
       bgTransparent: false,
-      dotStyle: 'extra-rounded',
-      cornerSquareStyle: 'extra-rounded',
-      cornerDotStyle: 'dot',
       cornerColorOverride: false,
     },
   },
 ]
+
+/** Shape presets — set dot + corner shapes together for a quick starting point. */
+export interface ShapePreset {
+  id: string
+  name: string
+  patch: Pick<StyleState, 'dotStyle' | 'cornerSquareStyle' | 'cornerDotStyle'>
+}
+
+export const SHAPE_PRESETS: ShapePreset[] = [
+  { id: 'square', name: 'Square', patch: { dotStyle: 'square', cornerSquareStyle: 'square', cornerDotStyle: 'square' } },
+  { id: 'rounded', name: 'Rounded', patch: { dotStyle: 'rounded', cornerSquareStyle: 'rounded', cornerDotStyle: 'dot' } },
+  { id: 'smooth', name: 'Smooth', patch: { dotStyle: 'extra-rounded', cornerSquareStyle: 'extra-rounded', cornerDotStyle: 'dot' } },
+  { id: 'dots', name: 'Dots', patch: { dotStyle: 'dots', cornerSquareStyle: 'extra-rounded', cornerDotStyle: 'dot' } },
+  { id: 'classy', name: 'Classy', patch: { dotStyle: 'classy', cornerSquareStyle: 'square', cornerDotStyle: 'square' } },
+  { id: 'fancy', name: 'Fancy', patch: { dotStyle: 'classy-rounded', cornerSquareStyle: 'dot', cornerDotStyle: 'dot' } },
+]
+
+export const DOT_TYPES: DotType[] = ['square', 'rounded', 'extra-rounded', 'dots', 'classy', 'classy-rounded']
+export const CORNER_TYPES: CornerSquareType[] = ['square', 'rounded', 'extra-rounded', 'dots', 'classy', 'classy-rounded', 'dot']
+
+export const SHAPE_LABEL: Record<string, string> = {
+  square: 'Square',
+  rounded: 'Round',
+  'extra-rounded': 'X-Round',
+  dots: 'Dots',
+  classy: 'Classy',
+  'classy-rounded': 'Classy+',
+  dot: 'Dot',
+}
 
 /** Sort stops by offset and guarantee at least two for a valid gradient. */
 function normalizedStops(stops: GradientStop[], fallback: string): GradientStop[] {
@@ -263,27 +279,35 @@ function normalizedStops(stops: GradientStop[], fallback: string): GradientStop[
   return sorted
 }
 
-/** Build the full qr-code-styling options object from our style + data + size. */
+/**
+ * Build the full qr-code-styling options object.
+ *
+ * IMPORTANT: qr-code-styling's `update()` deep-merges into the previous options,
+ * so we must pass BOTH `color` and `gradient` keys explicitly every time —
+ * otherwise switching from a gradient look to a solid one leaves the old
+ * gradient in place (e.g. the Black & White theme not turning black).
+ */
 export function buildQROptions(
   data: string,
   style: StyleState,
   size: number,
 ): QRStylingOptions {
+  const stops = normalizedStops(style.fgStops, style.fgColor)
   const fg =
     style.fgType === 'gradient'
       ? {
+          color: stops[0].color,
           gradient: {
             type: style.gradientType,
             rotation: (style.gradientRotation * Math.PI) / 180,
-            colorStops: normalizedStops(style.fgStops, style.fgColor).map((s) => ({
-              offset: s.offset,
-              color: s.color,
-            })),
+            colorStops: stops.map((s) => ({ offset: s.offset, color: s.color })),
           },
         }
-      : { color: style.fgColor }
+      : { color: style.fgColor, gradient: undefined }
 
-  const cornerColor = style.cornerColorOverride ? { color: style.cornerColor } : fg
+  const cornerColor = style.cornerColorOverride
+    ? { color: style.cornerColor, gradient: undefined }
+    : fg
 
   return {
     width: size,

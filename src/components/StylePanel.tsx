@@ -1,14 +1,16 @@
 import { useRef } from 'react'
 import { Icon } from './Icon'
 import { GradientEditor } from './GradientEditor'
+import { ShapeGlyph } from './ShapeGlyph'
 import {
   THEMES,
+  SHAPE_PRESETS,
+  DOT_TYPES,
+  CORNER_TYPES,
+  SHAPE_LABEL,
   stop,
   type StyleState,
   type Theme,
-  type DotType,
-  type CornerSquareType,
-  type CornerDotType,
   type ErrorLevel,
 } from '../qr/style'
 
@@ -76,27 +78,44 @@ function Segmented<T extends string>({
   )
 }
 
-const DOT_OPTS: { value: DotType; label: string }[] = [
-  { value: 'square', label: 'Square' },
-  { value: 'rounded', label: 'Rounded' },
-  { value: 'extra-rounded', label: 'Extra round' },
-  { value: 'dots', label: 'Dots' },
-  { value: 'classy', label: 'Classy' },
-  { value: 'classy-rounded', label: 'Classy round' },
-]
-
-const CORNER_SQ_OPTS: { value: CornerSquareType; label: string }[] = [
-  { value: 'square', label: 'Square' },
-  { value: 'rounded', label: 'Rounded' },
-  { value: 'extra-rounded', label: 'Extra round' },
-  { value: 'dot', label: 'Dot' },
-]
-
-const CORNER_DOT_OPTS: { value: CornerDotType; label: string }[] = [
-  { value: 'square', label: 'Square' },
-  { value: 'rounded', label: 'Rounded' },
-  { value: 'dot', label: 'Dot' },
-]
+/** A grid of shape choices with little visual glyphs. */
+function ShapeChoice({
+  options,
+  value,
+  onChange,
+  variant,
+}: {
+  options: string[]
+  value: string
+  onChange: (v: string) => void
+  variant: 'dot' | 'frame' | 'inner'
+}) {
+  return (
+    <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
+      {options.map((o) => {
+        const active = o === value
+        return (
+          <button
+            key={o}
+            type="button"
+            onClick={() => onChange(o)}
+            title={SHAPE_LABEL[o] ?? o}
+            className={`flex flex-col items-center gap-1.5 rounded-xl border py-2.5 transition ${
+              active
+                ? 'border-brand-400/60 bg-brand-500/15 text-brand-200'
+                : 'border-white/8 bg-white/[0.02] text-white/45 hover:border-white/20 hover:text-white/80'
+            }`}
+          >
+            <span className="flex h-6 items-center justify-center">
+              <ShapeGlyph type={o} variant={variant} />
+            </span>
+            <span className="text-[9px] font-medium leading-none">{SHAPE_LABEL[o] ?? o}</span>
+          </button>
+        )
+      })}
+    </div>
+  )
+}
 
 const ERROR_OPTS: { value: ErrorLevel; label: string }[] = [
   { value: 'L', label: 'L · 7%' },
@@ -224,34 +243,84 @@ export function StylePanel({ style, setStyle, applyPreset }: Props) {
         </div>
       </section>
 
-      {/* Shape */}
+      {/* Shape — fully independent from the color theme */}
       <section className="space-y-4">
-        <h3 className="flex items-center gap-2 text-sm font-semibold text-white/85">
-          <Icon name="Settings2" size={15} className="text-brand-400" />
-          Shape
-        </h3>
+        <div className="flex items-center justify-between">
+          <h3 className="flex items-center gap-2 text-sm font-semibold text-white/85">
+            <Icon name="Settings2" size={15} className="text-brand-400" />
+            Shape
+          </h3>
+          <span className="text-[11px] text-white/35">independent of theme</span>
+        </div>
+
+        {/* Quick shape presets */}
+        <div className="flex flex-wrap gap-1.5">
+          {SHAPE_PRESETS.map((p) => {
+            const active =
+              style.dotStyle === p.patch.dotStyle &&
+              style.cornerSquareStyle === p.patch.cornerSquareStyle &&
+              style.cornerDotStyle === p.patch.cornerDotStyle
+            return (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => setStyle(p.patch)}
+                className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
+                  active
+                    ? 'border-brand-400/60 bg-brand-500/20 text-white'
+                    : 'border-white/10 bg-white/[0.03] text-white/55 hover:border-white/20 hover:text-white/80'
+                }`}
+              >
+                {p.name}
+              </button>
+            )
+          })}
+        </div>
+
         <div>
-          <span className="label">Dot style</span>
-          <Segmented options={DOT_OPTS} value={style.dotStyle} onChange={(v) => setStyle({ dotStyle: v })} />
+          <span className="label">Body dots</span>
+          <ShapeChoice
+            options={DOT_TYPES}
+            value={style.dotStyle}
+            variant="dot"
+            onChange={(v) => setStyle({ dotStyle: v as StyleState['dotStyle'] })}
+          />
         </div>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <span className="label">Corner frame</span>
-            <Segmented
-              options={CORNER_SQ_OPTS}
-              value={style.cornerSquareStyle}
-              onChange={(v) => setStyle({ cornerSquareStyle: v })}
-            />
+
+        <div>
+          <div className="mb-2 flex items-center justify-between">
+            <span className="label mb-0">Corner frame</span>
+            <button
+              type="button"
+              onClick={() =>
+                setStyle({
+                  cornerSquareStyle: style.dotStyle,
+                  cornerDotStyle: style.dotStyle,
+                })
+              }
+              className="text-[11px] text-brand-300/80 hover:text-brand-200"
+            >
+              Match dots
+            </button>
           </div>
-          <div>
-            <span className="label">Corner dot</span>
-            <Segmented
-              options={CORNER_DOT_OPTS}
-              value={style.cornerDotStyle}
-              onChange={(v) => setStyle({ cornerDotStyle: v })}
-            />
-          </div>
+          <ShapeChoice
+            options={CORNER_TYPES}
+            value={style.cornerSquareStyle}
+            variant="frame"
+            onChange={(v) => setStyle({ cornerSquareStyle: v as StyleState['cornerSquareStyle'] })}
+          />
         </div>
+
+        <div>
+          <span className="label">Corner center</span>
+          <ShapeChoice
+            options={CORNER_TYPES}
+            value={style.cornerDotStyle}
+            variant="inner"
+            onChange={(v) => setStyle({ cornerDotStyle: v as StyleState['cornerDotStyle'] })}
+          />
+        </div>
+
         <div>
           <label className="flex cursor-pointer items-center gap-2 text-xs text-white/55">
             <input
