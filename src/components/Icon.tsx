@@ -1,0 +1,60 @@
+import {
+  Link,
+  Type,
+  Mail,
+  Phone,
+  MessageSquare,
+  Wifi,
+  Contact,
+  MessageCircle,
+  MapPin,
+  CalendarDays,
+  Bitcoin,
+  DollarSign,
+  Download,
+  Upload,
+  Sparkles,
+  ShieldCheck,
+  Zap,
+  Check,
+  Image as ImageIcon,
+  Trash2,
+  Palette,
+  Settings2,
+  Infinity as InfinityIcon,
+  WifiOff,
+  type LucideProps,
+} from 'lucide-react'
+import type { ComponentType } from 'react'
+
+const MAP: Record<string, ComponentType<LucideProps>> = {
+  Link,
+  Type,
+  Mail,
+  Phone,
+  MessageSquare,
+  Wifi,
+  Contact,
+  MessageCircle,
+  MapPin,
+  CalendarDays,
+  Bitcoin,
+  DollarSign,
+  Download,
+  Upload,
+  Sparkles,
+  ShieldCheck,
+  Zap,
+  Check,
+  Image: ImageIcon,
+  Trash2,
+  Palette,
+  Settings2,
+  Infinity: InfinityIcon,
+  WifiOff,
+}
+
+export function Icon({ name, ...props }: { name: string } & LucideProps) {
+  const Cmp = MAP[name] ?? Type
+  return <Cmp {...props} />
+}
