@@ -62,7 +62,7 @@ export default function App() {
       {/* Header */}
       <header className="mx-auto flex max-w-6xl items-center justify-between px-5 pt-6 sm:px-8">
         <div className="flex items-center gap-2.5">
-          <img src="/favicon.svg" alt="" className="h-9 w-9 rounded-xl" />
+          <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" className="h-9 w-9 rounded-xl" />
           <div className="leading-tight">
             <div className="text-lg font-extrabold tracking-tight">
               Perma<span className="text-brand-400">qr</span>
@@ -242,7 +242,7 @@ export default function App() {
       <footer className="border-t border-white/8">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-5 py-7 text-sm text-white/40 sm:flex-row sm:px-8">
           <div className="flex items-center gap-2">
-            <img src="/favicon.svg" alt="" className="h-5 w-5" />
+            <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" className="h-5 w-5" />
             <span>
               Perma<span className="text-brand-400">qr</span> — your codes, forever.
             </span>
